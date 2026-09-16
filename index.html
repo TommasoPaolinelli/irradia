@@ -1,0 +1,1511 @@
+<!doctype html>
+<title>Irradia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#eef1ec; --surface:#ffffff; --surface-2:#e3e8e0; --surface-hover:#dbe2d7;
+  --border:#cdd6c8; --border-strong:#b7c2b0;
+  --ink:#16222b; --ink-soft:#4d5c60; --ink-faint:#7c8a86;
+  --primary:#1f3a52; --primary-ink:#eef1ec; --primary-soft:#2c4c69;
+  --accent:#d9711f; --accent-ink:#fff7ef; --accent-soft:#f3d9be;
+  --good:#3f7d5c; --good-bg:#dcebe1;
+  --info:#2f6fb0; --info-bg:#dbe7f3;
+  --warn:#a9791f; --warn-bg:#f1e3c2;
+  --danger:#b23b3b; --danger-bg:#f3dcdb;
+  --radius:10px; --radius-lg:16px;
+  --font-display:'Barlow Condensed',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,'Cascadia Code',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101820; --surface:#182229; --surface-2:#1f2a32; --surface-hover:#26323b;
+    --border:#2c3941; --border-strong:#3c4b54;
+    --ink:#e7ede9; --ink-soft:#a9b8b3; --ink-faint:#748480;
+    --primary:#25405a; --primary-ink:#eef1ec; --primary-soft:#325574;
+    --accent:#e2872f; --accent-ink:#1c1206; --accent-soft:#4a3319;
+    --good:#5fae83; --good-bg:#1c3327;
+    --info:#6fa8dc; --info-bg:#1c2f42;
+    --warn:#d1a53a; --warn-bg:#3a3018;
+    --danger:#d9645a; --danger-bg:#3c2321;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101820; --surface:#182229; --surface-2:#1f2a32; --surface-hover:#26323b;
+  --border:#2c3941; --border-strong:#3c4b54;
+  --ink:#e7ede9; --ink-soft:#a9b8b3; --ink-faint:#748480;
+  --primary:#25405a; --primary-ink:#eef1ec; --primary-soft:#325574;
+  --accent:#e2872f; --accent-ink:#1c1206; --accent-soft:#4a3319;
+  --good:#5fae83; --good-bg:#1c3327;
+  --info:#6fa8dc; --info-bg:#1c2f42;
+  --warn:#d1a53a; --warn-bg:#3a3018;
+  --danger:#d9645a; --danger-bg:#3c2321;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0; letter-spacing:.01em;}
+p{margin:0;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+a{color:inherit;}
+::selection{background:var(--accent-soft);}
+
+#app{display:grid; grid-template-columns:248px 1fr; min-height:100vh;}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  background:var(--primary); color:var(--primary-ink); padding:22px 18px 18px;
+  display:flex; flex-direction:column; gap:26px; position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:34px; height:34px; border-radius:9px; background:var(--accent); color:var(--accent-ink);
+  display:flex; align-items:center; justify-content:center; flex:none;
+}
+.brand-mark svg{width:19px; height:19px;}
+.brand-name{font-family:var(--font-display); font-size:22px; font-weight:700; letter-spacing:.02em; color:var(--primary-ink);}
+.brand-tag{font-size:11px; color:#b9c8d3; margin-top:1px;}
+
+nav.mainnav{display:flex; flex-direction:column; gap:3px;}
+.navlink{
+  display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; border:none;
+  background:transparent; color:#c9d6de; font-size:14.5px; font-weight:500; text-align:left; width:100%;
+  transition:background .12s ease, color .12s ease;
+}
+.navlink svg{width:17px; height:17px; flex:none; opacity:.9;}
+.navlink:hover{background:rgba(255,255,255,.07); color:#fff;}
+.navlink.active{background:var(--accent); color:var(--accent-ink); font-weight:600;}
+.navlink .count{
+  margin-left:auto; font-family:var(--font-mono); font-size:11px; background:rgba(255,255,255,.12);
+  padding:1px 6px; border-radius:999px; color:#dbe6ec;
+}
+.navlink.active .count{background:rgba(0,0,0,.15); color:var(--accent-ink);}
+
+.sidebar-widget{
+  margin-top:auto; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--radius); padding:13px 14px;
+}
+.sidebar-widget h4{font-size:11.5px; text-transform:uppercase; letter-spacing:.07em; color:#a9bcc7; font-family:var(--font-body); font-weight:600; margin-bottom:9px;}
+.deadline-row{display:flex; align-items:baseline; gap:8px; padding:6px 0; border-top:1px solid rgba(255,255,255,.08);}
+.deadline-row:first-of-type{border-top:none;}
+.deadline-row .dl-title{font-size:12.5px; color:#e3eaee; flex:1; line-height:1.35;}
+.deadline-row .dl-days{font-family:var(--font-mono); font-size:11px; color:var(--accent); font-weight:500; white-space:nowrap;}
+.sidebar-footnote{font-size:10.5px; color:#8ea3af; margin-top:12px; line-height:1.4;}
+
+/* ---------- Main ---------- */
+main{min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--border);
+  padding:20px 32px 16px;
+}
+.topbar-row{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+.topbar h1{font-size:28px;}
+.topbar .sub{color:var(--ink-soft); font-size:13.5px; margin-top:3px;}
+.searchbox{
+  display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border);
+  border-radius:999px; padding:8px 14px; width:260px; flex:none;
+}
+.searchbox svg{width:15px; height:15px; color:var(--ink-faint); flex:none;}
+.searchbox input{border:none; background:transparent; outline:none; font-size:13.5px; color:var(--ink); width:100%; font-family:var(--font-body);}
+.searchbox input::placeholder{color:var(--ink-faint);}
+
+.chiprow{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;}
+.chipgroup{display:flex; gap:6px; padding:3px; background:var(--surface-2); border-radius:999px;}
+.chip{
+  border:none; background:transparent; color:var(--ink-soft); font-size:12.5px; font-weight:500;
+  padding:6px 13px; border-radius:999px; transition:background .12s ease, color .12s ease;
+}
+.chip:hover{color:var(--ink);}
+.chip.active{background:var(--surface); color:var(--primary); box-shadow:0 1px 2px rgba(0,0,0,.08); font-weight:600;}
+
+.content{padding:22px 32px 60px; flex:1;}
+
+/* ---------- Cards / feed ---------- */
+.feed-list{display:flex; flex-direction:column; gap:10px; max-width:760px;}
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:16px 18px; cursor:pointer; transition:border-color .12s ease, transform .12s ease;
+  display:flex; flex-direction:column; gap:8px;
+}
+.card:hover{border-color:var(--border-strong);}
+.card-top{display:flex; align-items:flex-start; gap:10px;}
+.pill{
+  font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:.02em;
+  padding:3px 9px; border-radius:999px; white-space:nowrap;
+}
+.pill-type-bando{background:var(--accent-soft); color:var(--accent);}
+.pill-type-norma{background:var(--info-bg); color:var(--info);}
+.pill-type-cer{background:var(--good-bg); color:var(--good);}
+.pill-ambito{background:var(--surface-2); color:var(--ink-soft); font-weight:500;}
+.tone-good{background:var(--good-bg); color:var(--good);}
+.tone-info{background:var(--info-bg); color:var(--info);}
+.tone-warn{background:var(--warn-bg); color:var(--warn);}
+.tone-danger{background:var(--danger-bg); color:var(--danger);}
+.card-title{font-family:var(--font-display); font-size:19px; font-weight:600; flex:1; line-height:1.2;}
+.star-btn{
+  border:none; background:transparent; padding:4px; border-radius:6px; flex:none; color:var(--ink-faint);
+  display:flex; align-items:center; justify-content:center;
+}
+.star-btn:hover{background:var(--surface-2); color:var(--accent);}
+.star-btn.saved{color:var(--accent);}
+.star-btn svg{width:18px; height:18px;}
+.card-meta{display:flex; gap:14px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-soft);}
+.card-meta span{display:flex; align-items:center; gap:5px;}
+.card-meta b{font-family:var(--font-mono); font-weight:500; color:var(--ink);}
+.card-sintesi{font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+.empty-state{padding:40px 20px; text-align:center; color:var(--ink-soft); font-size:14px; max-width:400px;}
+
+/* ---------- Detail view ---------- */
+.back-link{
+  display:inline-flex; align-items:center; gap:6px; border:none; background:transparent; color:var(--ink-soft);
+  font-size:13px; font-weight:500; padding:6px 0; margin-bottom:14px;
+}
+.back-link:hover{color:var(--accent);}
+.back-link svg{width:15px; height:15px;}
+.detail-wrap{max-width:720px;}
+.detail-pills{display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+.detail-header{display:flex; align-items:flex-start; gap:14px; justify-content:space-between;}
+.detail-title{font-size:32px; line-height:1.1;}
+.detail-sub{color:var(--ink-soft); font-size:15px; margin-top:6px;}
+.detail-meta{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:22px 0;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;
+}
+.detail-meta .m-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); font-weight:600;}
+.detail-meta .m-value{font-family:var(--font-mono); font-size:14.5px; margin-top:4px; color:var(--ink);}
+.detail-block{margin-top:22px;}
+.detail-block h3{font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); font-weight:600; margin-bottom:10px;}
+.detail-block p{font-size:15px; color:var(--ink); line-height:1.65;}
+.req-list{list-style:none; padding:0; display:flex; flex-direction:column; gap:9px;}
+.req-list li{display:flex; gap:10px; font-size:14.5px; line-height:1.5;}
+.req-list li svg{width:16px; height:16px; flex:none; margin-top:3px; color:var(--good);}
+.contrib-box{background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius); padding:14px 16px; margin-top:22px;}
+.contrib-box .m-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); font-weight:700;}
+.contrib-box p{margin-top:6px; font-size:14.5px; color:var(--ink);}
+.detail-actions{display:flex; gap:10px; margin-top:26px; align-items:center;}
+.btn{
+  display:inline-flex; align-items:center; gap:7px; border-radius:8px; padding:9px 16px; font-size:13.5px;
+  font-weight:600; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink);
+}
+.btn svg{width:15px; height:15px;}
+.btn:hover{background:var(--surface-hover);}
+.btn-accent{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+.btn-accent:hover{filter:brightness(1.06);}
+.btn-accent.saved{background:var(--surface); color:var(--accent); border-color:var(--accent);}
+.source-note{font-size:12px; color:var(--ink-faint); margin-top:24px; padding-top:16px; border-top:1px solid var(--border);}
+
+/* ---------- Marche ---------- */
+.cat-tabs{display:flex; gap:6px; margin-bottom:18px;}
+.cat-tab{
+  border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); font-weight:600;
+  font-size:13.5px; padding:8px 18px; border-radius:8px;
+}
+.cat-tab.active{background:var(--primary); color:var(--primary-ink); border-color:var(--primary);}
+.brand-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; max-width:900px;}
+.brand-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:18px; display:flex; flex-direction:column; gap:10px; text-align:left;
+}
+.brand-card:hover{border-color:var(--border-strong);}
+.brand-logo{
+  width:44px; height:44px; border-radius:9px; background:var(--primary); color:var(--primary-ink);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:16px;
+}
+.brand-card .b-name{font-family:var(--font-display); font-size:19px; font-weight:600;}
+.brand-card .b-meta{font-size:12px; color:var(--ink-soft);}
+.brand-card .b-count{font-family:var(--font-mono); font-size:11.5px; color:var(--accent); font-weight:500;}
+
+.model-list{display:flex; flex-direction:column; gap:10px; max-width:720px;}
+.model-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;
+  display:flex; align-items:center; gap:14px; text-align:left;
+}
+.model-card:hover{border-color:var(--border-strong);}
+.model-card .mc-main{flex:1;}
+.model-card .mc-name{font-family:var(--font-display); font-size:17px; font-weight:600;}
+.model-card .mc-tags{font-size:12px; color:var(--ink-soft); margin-top:3px;}
+.model-card .mc-spec{font-family:var(--font-mono); font-size:13px; color:var(--accent); font-weight:500; white-space:nowrap;}
+.model-card svg.chev{width:16px; height:16px; color:var(--ink-faint); flex:none;}
+
+/* ---------- Doc / commissioning ---------- */
+.doc-header{
+  background:var(--primary); color:var(--primary-ink); border-radius:var(--radius-lg); padding:22px 24px; margin-bottom:20px;
+}
+.doc-header .doc-brand{font-size:12px; color:#b9c8d3; text-transform:uppercase; letter-spacing:.06em; font-weight:600;}
+.doc-header h2{font-size:26px; margin-top:4px;}
+.doc-header .doc-specs{display:flex; gap:18px; margin-top:12px; flex-wrap:wrap;}
+.doc-header .doc-specs span{font-size:12.5px; color:#cddbe2;}
+.doc-header .doc-specs b{font-family:var(--font-mono); color:#fff; font-weight:500;}
+.doc-rev{font-family:var(--font-mono); font-size:11px; color:#9db3bf; margin-top:12px;}
+.doc-section{margin-bottom:20px;}
+.doc-section h3{
+  font-size:14px; color:var(--ink); font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:8px;
+}
+.doc-section h3 .step-no{
+  font-family:var(--font-mono); font-size:11px; background:var(--primary); color:var(--primary-ink);
+  width:20px; height:20px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex:none;
+}
+.check-item{
+  display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; margin-bottom:6px; font-size:14px; line-height:1.5;
+}
+.check-item .box{
+  width:18px; height:18px; border-radius:5px; border:1.5px solid var(--border-strong); flex:none; margin-top:1px;
+  display:flex; align-items:center; justify-content:center; transition:background .1s, border-color .1s;
+}
+.check-item .box svg{width:12px; height:12px; color:#fff; opacity:0; transition:opacity .1s;}
+.check-item.checked{background:var(--good-bg); border-color:var(--good);}
+.check-item.checked .box{background:var(--good); border-color:var(--good);}
+.check-item.checked .box svg{opacity:1;}
+.check-item.checked span{color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--ink-faint);}
+
+/* ---------- Prima configurazione ---------- */
+.pc-header{
+  background:var(--accent); color:var(--accent-ink); border-radius:var(--radius-lg); padding:22px 24px; margin-bottom:22px;
+}
+.pc-header .pc-eyebrow{font-size:12px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; opacity:.85;}
+.pc-header h2{font-size:26px; margin-top:4px;}
+.pc-header p{margin-top:8px; font-size:14px; opacity:.92; max-width:56ch;}
+.pc-list{display:flex; flex-direction:column; gap:0; max-width:640px;}
+.pc-step{display:flex; gap:16px; position:relative; padding-bottom:26px;}
+.pc-step:last-child{padding-bottom:0;}
+.pc-step .pc-num{
+  width:32px; height:32px; border-radius:50%; background:var(--surface); border:2px solid var(--accent); color:var(--accent);
+  font-family:var(--font-display); font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center;
+  flex:none; position:relative; z-index:1;
+}
+.pc-step:not(:last-child)::before{
+  content:''; position:absolute; left:15px; top:32px; bottom:0; width:2px; background:var(--border);
+}
+.pc-step .pc-text{padding-top:5px; font-size:15px; line-height:1.55; color:var(--ink);}
+.pc-source-note{font-size:12px; color:var(--ink-faint); margin-top:28px; padding-top:16px; border-top:1px solid var(--border); max-width:640px;}
+
+/* ---------- Preferiti ---------- */
+.pref-row{
+  display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:12px 16px; margin-bottom:8px; max-width:720px; text-align:left;
+}
+.pref-row .pr-main{flex:1;}
+.pref-row .pr-title{font-family:var(--font-display); font-size:16.5px; font-weight:600;}
+.pref-row .pr-sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+
+[hidden]{display:none !important;}
+
+@media print{
+  body{background:#fff;}
+  .sidebar, .topbar, .chiprow, .back-link, .star-btn, .detail-actions{display:none !important;}
+  #app{display:block;}
+  main{display:block;}
+  .content{padding:0;}
+  .detail-wrap{max-width:100%;}
+  .doc-header, .contrib-box, .pill, .card, .check-item, .brand-logo, .pc-header, .pc-step .pc-num{
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact;
+  }
+  .doc-section{break-inside:avoid-page;}
+  .check-item, .pc-step{break-inside:avoid;}
+  .source-note{margin-top:12px;}
+}
+@media (max-width:800px){
+  #app{grid-template-columns:1fr;}
+  .sidebar{position:static; height:auto; flex-direction:row; align-items:center; gap:14px; padding:14px 16px; overflow:visible;}
+  .brand-tag{display:none;}
+  nav.mainnav{flex-direction:row; gap:4px;}
+  .navlink span.label{display:none;}
+  .navlink .count{display:none;}
+  .sidebar-widget{display:none;}
+  .topbar{padding:16px 18px 12px;}
+  .content{padding:16px 18px 50px;}
+  .searchbox{width:100%;}
+  .topbar-row{flex-direction:column; align-items:stretch;}
+  .detail-meta{grid-template-columns:1fr 1fr;}
+}
+</style>
+
+<div id="app"></div>
+
+<script>
+const ICONS = {
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
+  feed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+  grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.3"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.3"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.3"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.3"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5l2.65 5.62 6.1.6-4.55 4.3 1.25 6.08L12 16.9l-5.45 3.2 1.25-6.08-4.55-4.3 6.1-.6z"/></svg>',
+  starFill:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.65 5.62 6.1.6-4.55 4.3 1.25 6.08L12 16.9l-5.45 3.2 1.25-6.08-4.55-4.3 6.1-.6z"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+  checkSm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+  print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18h12v4H6zM4 9h16a2 2 0 012 2v5h-4M4 16H2V11a2 2 0 012-2h0"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>',
+  battery:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 10v4"/></svg>',
+  plug:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v4M15 2v4M7 6h10v3a5 5 0 01-5 5 5 5 0 01-5-5V6zM12 14v3M8 20a4 4 0 018 0"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 3v3M8 3v3M3 9.5h18"/></svg>',
+  building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 10h.01M15 10h.01M9 14h.01M15 14h.01"/></svg>',
+};
+
+function icon(name){ return ICONS[name] || ''; }
+
+function fmtDate(iso){
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'});
+}
+function typeLabel(type, long){
+  if(type === 'bando') return 'Bando';
+  if(type === 'cer') return 'CER';
+  return long ? 'Norma tecnica' : 'Norma';
+}
+function daysUntil(iso){
+  const today = new Date('2026-09-15T00:00:00');
+  const d = new Date(iso+'T00:00:00');
+  return Math.round((d - today) / 86400000);
+}
+function toneForDays(n){
+  if(n < 0) return 'danger';
+  if(n <= 14) return 'danger';
+  if(n <= 45) return 'warn';
+  return 'good';
+}
+
+const UPDATES = [
+  {
+    id:'b1', type:'bando', ambito:'industriale', stato:'aperto', datiReali:true,
+    title:'PN RIC FTV SUD',
+    sottotitolo:'Contributo in conto capitale per impianti fotovoltaici e termo-fotovoltaici in autoconsumo delle imprese del Sud Italia, con possibilità di accumulo.',
+    ente:'GSE – Gestore dei Servizi Energetici',
+    pubblicato:'2026-05-15', scadenza:null, scadenzaNota:'A sportello, fino a esaurimento della dotazione (262 milioni di euro)',
+    sintesi:'La Misura PN RIC FTV SUD incentiva la realizzazione o il potenziamento di impianti fotovoltaici e termo-fotovoltaici in autoconsumo su unità produttive delle imprese del Sud Italia, con la possibilità di abbinare un sistema di accumulo connesso all’impianto.',
+    requisiti:[
+      'Unità produttive in aree industriali, produttive o artigianali di Comuni con più di 5.000 abitanti',
+      'Regioni ammesse: Basilicata, Calabria, Campania, Molise, Puglia, Sardegna e Sicilia',
+      'Aperto a tutte le tipologie di impresa che hanno nella propria disponibilità l’unità produttiva',
+      'Possibilità di realizzare un sistema di accumulo connesso all’impianto'
+    ],
+    contributo:'Contributo in conto capitale. Dotazione complessiva 262 milioni di euro, di cui il 60% riservato alle PMI (il 25% di questa quota alle sole piccole imprese). L’energia immessa in rete e non autoconsumata viene ritirata dal GSE per 20 anni, a beneficio del Fondo Nazionale Reddito Energetico.'
+  },
+  {
+    id:'n1', type:'norma', ambito:'entrambi', stato:'in-arrivo',
+    title:'CEI 0-21, Variante V1',
+    sottotitolo:'Aggiornamento dei requisiti della protezione di interfaccia per impianti connessi in bassa tensione.',
+    ente:'CEI – Comitato Elettrotecnico Italiano',
+    pubblicato:'2026-08-20', scadenza:'2027-01-10',
+    sintesi:'La variante ridefinisce le soglie di intervento della protezione di interfaccia (SPI) e introduce l’obbligo di funzione anti-islanding aggiornata per tutti i nuovi impianti allacciati dopo l’entrata in vigore.',
+    requisiti:[
+      'Nuove soglie di tensione e frequenza per l’intervento della SPI (58.03PF3)',
+      'Obbligo di test funzionale della protezione documentato in fase di collaudo',
+      'Gli impianti già connessi hanno 12 mesi per l’adeguamento firmware, dove previsto dal costruttore',
+      'Applicabile a impianti fino a 400 kW in bassa tensione'
+    ],
+    contributo:null
+  },
+  {
+    id:'b2', type:'bando', ambito:'civile', stato:'aperto', datiReali:true,
+    title:'Reddito Energetico Nazionale',
+    sottotitolo:'Finanziamento in conto capitale per impianti fotovoltaici domestici destinato ai nuclei familiari in condizione di disagio economico.',
+    ente:'GSE – Gestore dei Servizi Energetici',
+    pubblicato:'2026-04-10', scadenza:null, scadenzaNota:'Bando 2025 attivo, fino a esaurimento delle risorse regionali',
+    sintesi:'Il Reddito Energetico Nazionale finanzia impianti fotovoltaici da 2 a 6 kW a servizio di abitazioni di nuclei familiari in condizione di disagio economico, per favorirne l’autoconsumo. Il GSE gestisce il Fondo Nazionale istituito con il DM 8 agosto 2023.',
+    requisiti:[
+      'ISEE del nucleo familiare inferiore a 15.000 €, o a 30.000 € con almeno 4 figli a carico',
+      'Titolarità di un diritto reale sull’immobile dove installare l’impianto (proprietà, superficie, usufrutto, uso, abitazione)',
+      'Intestazione del contratto di fornitura elettrica dell’utenza di residenza anagrafica del nucleo familiare',
+      'Immobili in categoria catastale gruppo A, esclusi A/1, A/8, A/9 e A/10'
+    ],
+    contributo:'Finanziamento in conto capitale a copertura dell’impianto. Risorse 2025: 103.166.077 €, di cui 82.290.554 € riservati a Abruzzo, Basilicata, Calabria, Campania, Molise, Puglia, Sardegna e Sicilia, e 20.875.523 € alle restanti Regioni. La domanda è presentata dal Soggetto Beneficiario con il supporto dell’impresa installatrice (Soggetto Realizzatore), che riceve materialmente il contributo.'
+  },
+  {
+    id:'n2', type:'norma', ambito:'industriale', stato:'aperto',
+    title:'CEI 0-16, requisiti SPI in media tensione',
+    sottotitolo:'Chiarimenti applicativi sulla protezione di interfaccia per impianti industriali connessi in MT.',
+    ente:'CEI – Comitato Elettrotecnico Italiano',
+    pubblicato:'2026-06-05', scadenza:'2026-09-30',
+    sintesi:'Documento di chiarimento su taratura e verifica periodica della protezione di interfaccia per gli impianti superiori a 400 kW connessi in media tensione, in vigore dal 30 settembre.',
+    requisiti:[
+      'Verifica funzionale della SPI ogni 5 anni per impianti sopra 1 MW',
+      'Relazione di taratura da allegare alla richiesta di connessione al distributore',
+      'Coordinamento con il sistema di protezione generale (SPG) obbligatorio',
+      'Applicabile a impianti industriali e agroindustriali in MT'
+    ],
+    contributo:null
+  },
+  {
+    id:'b3', type:'bando', ambito:'industriale', stato:'aperto',
+    title:'Bando Regione Lombardia – FV per PMI',
+    sottotitolo:'Contributi a fondo perduto per impianti fotovoltaici e sistemi di accumulo destinati a piccole e medie imprese.',
+    ente:'Regione Lombardia – Unioncamere',
+    pubblicato:'2026-08-01', scadenza:'2026-10-05',
+    sintesi:'Misura regionale per PMI lombarde che installano impianti FV per autoconsumo, con maggiorazione per chi abbina un sistema di accumulo dimensionato secondo le linee guida regionali.',
+    requisiti:[
+      'PMI con sede operativa in Lombardia, iscritte al Registro Imprese da almeno 2 anni',
+      'Impianto dimensionato sui consumi storici degli ultimi 12 mesi',
+      'Maggiorazione del 10% per accumulo con capacità minima 1 kWh/kWp installato',
+      'Cumulabile con Transizione 5.0 nei limiti previsti dal regime de minimis'
+    ],
+    contributo:'Contributo a fondo perduto del 30% delle spese ammissibili, fino a un massimo di 60.000 € per impianto.'
+  },
+  {
+    id:'n3', type:'norma', ambito:'entrambi', stato:'in-arrivo',
+    title:'Guida Terna al portale Gaudì – rev. 2026',
+    sottotitolo:'Aggiornamento delle procedure di censimento impianti e comunicazione dati di producibilità.',
+    ente:'Terna S.p.A.',
+    pubblicato:'2026-09-08', scadenza:'2026-12-01',
+    sintesi:'Nuova versione della guida operativa per il censimento degli impianti sul portale Gaudì, con campi aggiuntivi per la tracciabilità dei moduli e obbligo di allegare la scheda tecnica dell’inverter.',
+    requisiti:[
+      'Obbligo di indicare il codice EAN del punto di connessione già in fase di censimento provvisorio',
+      'Caricamento della scheda tecnica dell’inverter in formato PDF',
+      'Tracciabilità del produttore e lotto dei moduli per impianti sopra 20 kW',
+      'Termine di adeguamento per gli impianti già censiti: 1 dicembre 2026'
+    ],
+    contributo:null
+  },
+  {
+    id:'n4', type:'norma', ambito:'industriale', stato:'aperto', datiReali:true, dateLabel:'Prima scadenza di adeguamento (impianti ≥ 1 MW)',
+    title:'Delibera ARERA 385/2025/R/eel — obbligo CCI',
+    sottotitolo:'Per impianti fotovoltaici ≥ 100 kW in media tensione: obbligo del Controllore Centrale di Impianto (CCI) per la teleriduzione della potenza su comando del distributore, con scadenze scaglionate e contributo forfetario per l’adeguamento.',
+    ente:'ARERA – Autorità di Regolazione per Energia Reti e Ambiente',
+    pubblicato:'2025-08-06', scadenza:'2026-12-31',
+    sintesi:'La delibera 385/2025/R/eel verifica la conformità delle modifiche all’Allegato A.72 del Codice di rete di Terna e alla Norma CEI 0-16, introducendo l’obbligo di installare il CCI (Controllore Centrale di Impianto) e di attivare la funzione PF2 di limitazione della potenza attiva su comando remoto del distributore, per garantire la sicurezza del Sistema Elettrico Nazionale.',
+    requisiti:[
+      'Campo di applicazione: impianti fotovoltaici, esistenti e nuovi, di potenza ≥ 100 kW connessi (o da connettere) alla rete in media tensione (MT) — gli impianti sotto i 100 kW o allacciati in bassa tensione non rientrano in questo obbligo',
+      'Impianti nuovi (nel campo di applicazione): il CCI è obbligatorio da subito, entro la data di entrata in esercizio — senza installazione non è possibile attivare la connessione',
+      'Impianti esistenti di potenza ≥ 1 MW: adeguamento e comunicazione al distributore entro il 31 dicembre 2026',
+      'Impianti esistenti tra 500 kW e 1 MW: adeguamento entro il 31 dicembre 2027',
+      'Impianti esistenti tra 100 kW e 500 kW: adeguamento entro il 31 marzo 2028',
+      'Il CCI deve essere conforme agli Allegati O e T della Norma CEI 0-16 e supportare la funzionalità PF2',
+      'La comunicazione di avvenuto adeguamento va accompagnata da una dichiarazione di un tecnico abilitato non dipendente del produttore'
+    ],
+    contributo:'Per gli impianti tra 100 kW e 1 MW è previsto un contributo forfetario per l’adeguamento, erogato dal distributore, che decresce più si tarda a comunicare l’adeguamento. Impianti 500 kW–1 MW (base 10.000 €): 10.000 € se comunicato entro il 31/12/2026, 8.000 € tra il 1/1 e il 28/2/2027, 4.000 € tra il 1/3 e il 31/5/2027, zero oltre. Impianti 100–500 kW (base 7.500 €): 7.500 € se comunicato entro il 31/1/2027, 6.000 € tra il 1/2 e il 31/3/2027, 3.000 € tra il 1/4 e il 30/6/2027, zero oltre. Per gli impianti ≥ 1 MW questa delibera non prevede un contributo forfetario specifico.'
+  },
+  {
+    id:'n5', type:'norma', ambito:'entrambi', stato:'aperto', datiReali:true, dateLabel:'Verifica periodica obbligatoria',
+    title:'Linee guida VVF — prevenzione incendi per impianti fotovoltaici (Prot. 14030/2025)',
+    sottotitolo:'Tipi di moduli da usare, distanze di installazione, sezionamento di emergenza e segnaletica per impianti FV in edifici soggetti a CPI: la nuova linea guida che aggiorna quella del 2012.',
+    ente:'Ministero dell’Interno – Dipartimento dei Vigili del Fuoco, Direzione Centrale Prevenzione e Sicurezza Tecnica (DCPREV)',
+    pubblicato:'2025-09-01', scadenza:null, scadenzaNota:'Verifica del rischio incendio ogni 2 anni, e comunque a ogni trasformazione, ampliamento o modifica dell’impianto',
+    sintesi:'La linea guida (Prot. n. 0014030 del 1° settembre 2025) aggiorna la guida tecnica del 2012 (nota D.C.PREV. n. 1324/2012, e la successiva n. 6334/2012) sulle misure di prevenzione incendi per impianti fotovoltaici con tensione DC fino a 1.500 V, incorporati in edifici civili, industriali, commerciali o rurali soggetti alle visite e ai controlli di prevenzione incendi (DPR 151/2011), incluse pergole, tettoie e pensiline collegate, anche indipendenti come le coperture di parcheggi e i distributori di carburanti. Distingue gli impianti BAPV (pannelli applicati sull’involucro come componente estraneo) dagli impianti BIPV (pannelli integrati che sostituiscono un elemento costruttivo, ad esempio una copertura o una balaustra).',
+    requisiti:[
+      'Cinque modalità di installazione riconosciute: BAPV in copertura, BAPV in facciata, BIPV integrato in copertura, BIPV integrato in facciata, impianto non incorporato (es. pensiline indipendenti su parcheggi)',
+      'Tipi di moduli: per i BIPV glass-glass usati come unico elemento di copertura di pergole/pensiline/tettoie o come balaustre di balconi, terrazze e scale, è richiesta una classe di reazione al fuoco almeno B-s2,d0 secondo EN 13501-1',
+      'Nessun requisito di reazione al fuoco per i pannelli BAPV posati su coperture di parcheggi non interferenti o su pensiline di distributori di carburanti in materiale incombustibile',
+      'Distanze in copertura: pannelli raggruppati in sottoinsiemi non superiori a 20 m in ogni direzione, separati da corridoi liberi di almeno 2 m, con un franco di almeno 1 m dal bordo della copertura e dalle aperture, dai sistemi EFC e dagli impianti tecnici',
+      'Coperture a shed ("a dente di sega"): franco di almeno 0,1 m tra i pannelli e la falda finestrata per evitare il gocciolamento, distanza minima di 1 m tra pannelli e aperture (il limite di 20 m sale a 30 m se è presente una fascia libera di almeno 2 m)',
+      'Facciata: sottoinsiemi di pannelli non superiori a 3 m in altezza e 20 m in lunghezza, separati da elementi orizzontali incombustibili sporgenti almeno 0,5 m, con distanza minima di 1 m dalle aperture',
+      'Inverter: da installare su supporti classificati A1 (EN 13501-1) oppure con interposizione di uno strato incombustibile EI30',
+      'Compartimentazione: distanza minima di 1 m dagli elementi verticali di compartimentazione antincendio sottostanti; cavi posati su passerelle protette e distanziate dalla copertura',
+      'Sezionamento di emergenza obbligatorio: dispositivo segnalato, protetto dall’incendio e facilmente accessibile ai soccorritori, in grado di sezionare l’impianto da tutte le fonti di alimentazione, incluso il generatore fotovoltaico stesso',
+      'Segnaletica obbligatoria lungo le condutture in corrente continua: cartello "ATTENZIONE: IMPIANTO FOTOVOLTAICO IN TENSIONE DURANTE LE ORE DIURNE (…Volt)", resistente ai raggi UV, ripetuto ogni 10 metri',
+      'Nessun componente dell’impianto può trovarsi nelle vie di esodo o nei luoghi sicuri',
+      'L’installazione di un impianto FV in un’attività esistente soggetta a CPI è sempre considerata "modifica rilevante" ai fini della sicurezza antincendio (DPR 151/2011, art. 4 comma 6)',
+      'Se l’impianto rispetta integralmente la linea guida e la valutazione del rischio non evidenzia criticità, l’intervento generalmente non comporta aggravio delle condizioni di sicurezza (DM Interno 7 agosto 2012, art. 4 comma 7)',
+      'In caso di aggravio del rischio per attività di categoria B/C: serve la Valutazione Progetto del Comando VVF territorialmente competente (DPR 151/2011, art. 3); negli altri casi è sufficiente la SCIA antincendio (art. 4)',
+      'Verifica del rischio incendio obbligatoria ogni 2 anni (o a ogni modifica/ampliamento), con attenzione particolare a giunzioni, serraggi e hot spot da ombreggiamento; le manutenzioni vanno registrate nel registro dei controlli antincendio (DM Interno 1 settembre 2021, art. 3)',
+      'Obbligatori il manuale di uso e manutenzione dell’impianto e il progetto a firma di tecnico abilitato',
+      'Per impianti con accumulo elettrochimico abbinato, la valutazione del rischio incendio/esplosione segue il DM 7 agosto 2012, con riferimento alla circolare DCPREV 21021 del 23/12/2024 sui sistemi BESS'
+    ],
+    contributo:null
+  },
+  {
+    id:'c1', type:'cer', ambito:'entrambi', stato:'aperto', datiReali:true, dateLabel:'Richiesta di accesso',
+    title:'Comunità Energetiche Rinnovabili (CER)',
+    sottotitolo:'Configurazione per condividere energia rinnovabile tra produttori e consumatori collegati alla stessa cabina primaria, con due contributi economici riconosciuti dal GSE per 20 anni.',
+    ente:'GSE – Gestore dei Servizi Energetici',
+    pubblicato:'2026-08-01', scadenza:null, scadenzaNota:'Sempre aperta tramite il portale GSE (applicazione SPC – Comunità Energetiche e Autoconsumo)',
+    sintesi:'Una CER è un soggetto giuridico autonomo i cui membri (persone fisiche, PMI, enti pubblici e del terzo settore) condividono, tramite i loro consumi, l’energia elettrica rinnovabile prodotta da impianti collegati alla stessa cabina primaria. Il GSE riconosce due contributi economici sull’energia condivisa per la durata di 20 anni.',
+    requisiti:[
+      'Tutti i punti di prelievo e immissione della configurazione devono essere nell’area sottesa alla stessa cabina primaria, verificabile con la Mappa cabine primarie del GSE',
+      'Non possono essere membri: amministrazioni centrali, grandi imprese, imprese private con codice ATECO prevalente 35.1, 35.11.00, 35.12.00 o 35.15.00',
+      'Servono almeno 2 membri (clienti finali e/o produttori) e almeno 2 punti di connessione distinti',
+      'Il Referente della CER presenta la richiesta di accesso al GSE tramite l’applicazione SPC – Comunità Energetiche e Autoconsumo, nell’Area clienti'
+    ],
+    contributo:'Due contributi per 20 anni: il corrispettivo di valorizzazione (Delibera ARERA 727/2022/R/eel) sull’energia autoconsumata, e la tariffa premio (Decreto CER) sull’energia condivisa incentivata, erogati mensilmente con acconto in corso d’anno e conguaglio l’anno successivo (soglia minima di erogazione: 50 €). Il GSE trattiene un corrispettivo di gestione: nullo sotto i 3 kW, 15 €/anno fisso tra 3 e 1.000 kW, più 1 €/kW variabile tra 20 e 1.000 kW. I produttori possono inoltre vendere a mercato o cedere al GSE tramite Ritiro Dedicato (RID) l’energia immessa in rete.'
+  },
+  {
+    id:'c2', type:'cer', ambito:'entrambi', stato:'aperto', datiReali:true, dateLabel:'Stato del turno di finanziamento',
+    title:'Contributo PNRR per CER nei Comuni sotto 50.000 abitanti',
+    sottotitolo:'Contributo in conto capitale fino al 40% delle spese ammissibili per impianti rinnovabili in configurazioni di CER o Gruppi di Autoconsumatori nei piccoli Comuni.',
+    ente:'GSE – Gestore dei Servizi Energetici',
+    pubblicato:'2026-08-07', scadenza:null, scadenzaNota:'Accordi di concessione stipulati dal GSE entro il 31 agosto 2026 con i beneficiari già ammessi — verificare su gse.it eventuali nuove finestre di domanda per turni successivi',
+    sintesi:'In attuazione dell’articolo 27 del DL 19 febbraio 2026, n. 19 (DL PNRR) e della Legge 7 agosto 2026, n. 152, il GSE gestisce un programma di sovvenzione per complessivi 1.041,5 milioni di euro (795,5 milioni iniziali, integrati con altri 246 milioni dalla Legge 152/2026) a favore di impianti rinnovabili inseriti in configurazioni di CER o Gruppi di Autoconsumatori in Comuni con popolazione inferiore a 50.000 abitanti.',
+    requisiti:[
+      'Impianto nuovo o potenziamento di impianto esistente, potenza non superiore a 1 MW, ubicato in un Comune sotto i 50.000 abitanti',
+      'Avvio dei lavori successivo alla data di presentazione della domanda di contributo',
+      'Impianto nell’area sottesa alla stessa cabina primaria della configurazione CER o Gruppo di Autoconsumatori di cui farà parte',
+      'Per questo turno: lavori da completare entro il 30 giugno 2026 ed entrata in esercizio entro 24 mesi dall’accordo di concessione e comunque non oltre il 31 dicembre 2027',
+      'Rispetto dei requisiti DNSH (Do No Significant Harm) e del tagging climatico previsti dal PNRR'
+    ],
+    contributo:'Contributo in conto capitale fino al 40% delle spese ammissibili. Erogazione differenziata per taglia: impianti fino a 200 kW con anticipo fino al 30% + saldo, oppure saldo diretto al 100%; impianti tra 200 kW e 1 MW con anticipo 30% + saldo, quota intermedia al 40% + saldo, oppure saldo diretto al 100%.'
+  },
+  {
+    id:'b4', type:'bando', ambito:'industriale', stato:'in-arrivo',
+    title:'Fondo Nazionale Efficienza Energetica – FV oltre 1 MW',
+    sottotitolo:'Finanziamenti agevolati per grandi impianti fotovoltaici industriali e autoconsumo a distanza.',
+    ente:'Ministero dell’Ambiente e della Sicurezza Energetica',
+    pubblicato:'2026-09-10', scadenza:'2026-12-20',
+    sintesi:'Nuova finestra del fondo rotativo per impianti fotovoltaici industriali di taglia superiore a 1 MW, con particolare attenzione ai progetti di autoconsumo a distanza tra più stabilimenti dello stesso gruppo.',
+    requisiti:[
+      'Potenza di picco superiore a 1 MW su uno o più siti produttivi collegati',
+      'Diagnosi energetica preliminare obbligatoria ai sensi del D.Lgs. 102/2014',
+      'Piano di autoconsumo a distanza con contratti infragruppo',
+      'Cofinanziamento minimo del 20% a carico del proponente'
+    ],
+    contributo:'Finanziamento agevolato fino all 80% dell’investimento, tasso agevolato pari al 20% del tasso di riferimento UE.'
+  }
+];
+
+function generaSchedaInverter(brand, modello, app){
+  return [
+    { titolo:'Prima della messa in servizio', voci:[
+      'Verificare la corretta polarità di ogni stringa DC prima del collegamento all’inverter',
+      'Misurare la resistenza di isolamento dell’impianto DC e annotare il valore in scheda',
+      'Controllare il serraggio di tutti i connettori MC4 e la tenuta dei pressacavi',
+      'Verificare la continuità dell’impianto di terra e il collegamento equipotenziale del telaio inverter'
+    ]},
+    { titolo:'Configurazione tramite ' + app, voci:[
+      'Impostare il paese "Italia" e il profilo di rete CEI 0-21 interno',
+      'Inserire la potenza contrattuale e il limite di immissione se previsto dal contratto di connessione',
+      'Sincronizzare data e ora, collegare il modulo di monitoraggio a rete WiFi o Ethernet',
+      'Aggiornare il firmware all’ultima versione disponibile prima del collaudo'
+    ]},
+    { titolo:'Protezione di interfaccia (SPI)', voci:[
+      'Verificare che le soglie di intervento SPI corrispondano ai valori richiesti dalla CEI 0-21',
+      'Eseguire il test funzionale della protezione simulando un’anomalia di rete',
+      'Registrare i tempi di intervento misurati e confrontarli con i valori di norma',
+      'Allegare l’esito del test alla documentazione di connessione al distributore'
+    ]},
+    { titolo:'Collaudo e checklist finale', voci:[
+      'Misurare tensione e corrente di ogni stringa in condizioni di irraggiamento stabile',
+      'Verificare l’assenza di allarmi attivi sul display o sull’app di monitoraggio',
+      'Compilare la dichiarazione di conformità dell’impianto (DiCo)',
+      'Firma dell’installatore e consegna della documentazione al cliente finale'
+    ]}
+  ];
+}
+function generaSchedaBatteria(brand, modello, note){
+  return [
+    { titolo:'Prima dell’installazione', voci:[
+      'Verificare la compatibilità del modulo batteria con l’inverter già installato: ' + note,
+      'Controllare temperatura e ventilazione del locale tecnico secondo la scheda del costruttore',
+      'Rispettare le distanze minime di sicurezza da pareti e altre apparecchiature',
+      'Verificare la portata del pavimento o della struttura di fissaggio a parete'
+    ]},
+    { titolo:'Cablaggio e comunicazione', voci:[
+      'Collegare il bus dati (CAN o RS485) tra batteria e inverter secondo lo schema del costruttore',
+      'Impostare l’indirizzo del modulo se la batteria è configurata in stack modulare',
+      'Collegare il BMS e verificare che riporti correttamente stato di carica e temperatura celle',
+      'Verificare la corretta polarità dei cavi di potenza prima dell’accensione'
+    ]},
+    { titolo:'Configurazione', voci:[
+      'Impostare le soglie di carica e scarica secondo il profilo di utilizzo del cliente',
+      'Configurare la riserva di emergenza (backup) se richiesta in fase di progetto',
+      'Aggiornare il firmware del BMS all’ultima versione disponibile',
+      'Impostare la modalità di funzionamento (autoconsumo, backup, time-of-use)'
+    ]},
+    { titolo:'Collaudo', voci:[
+      'Eseguire un ciclo completo di carica e scarica di prova',
+      'Verificare il bilanciamento delle celle al termine del ciclo di test',
+      'Controllare l’assenza di allarmi sul BMS e sull’app di monitoraggio',
+      'Compilare la checklist finale e consegnarla al cliente insieme alla garanzia'
+    ]}
+  ];
+}
+
+function generaSchedaColonnina(app){
+  return [
+    { titolo:'Prima dell’installazione', voci:[
+      'Verificare la sezione del cavo di alimentazione dedicato in base alla potenza della colonnina',
+      'Verificare la presenza di un interruttore magnetotermico differenziale dedicato (tipo A o B secondo il manuale del costruttore)',
+      'Verificare la distanza massima ammessa dal quadro elettrico generale',
+      'Verificare il grado di protezione IP richiesto in base all’installazione (interno o esterno)'
+    ]},
+    { titolo:'Cablaggio e collegamento', voci:[
+      'Collegare la linea dedicata rispettando la sezione di cavo calcolata in fase di progetto',
+      'Installare la protezione differenziale del tipo richiesto dal costruttore',
+      'Collegare l’eventuale pinza amperometrica o Smart Meter per la lettura di consumi e produzione FV',
+      'Verificare il collegamento di terra della colonnina e la continuità dell’impianto'
+    ]},
+    { titolo:'Configurazione tramite ' + app, voci:[
+      'Abbinare la colonnina all’app o al cloud del costruttore e verificare la connettività di rete',
+      'Impostare la modalità di ricarica desiderata: solo eccedenza FV, eco boost o manuale',
+      'Impostare potenza minima e massima di ricarica in base al veicolo del cliente',
+      'Verificare la corretta lettura dei dati di produzione fotovoltaica e di consumo domestico'
+    ]},
+    { titolo:'Collaudo', voci:[
+      'Eseguire un test di ricarica in modalità rete a potenza fissa',
+      'Eseguire un test di ricarica in modalità eccedenza FV e verificare la variazione di potenza in tempo reale',
+      'Verificare l’assenza di allarmi e la corretta registrazione della sessione sull’app',
+      'Compilare la checklist finale e consegnarla al cliente insieme alle istruzioni d’uso'
+    ]}
+  ];
+}
+
+const PRIMA_CONFIG = {
+  zcsIbrido: [
+    'Verifica che l’interruttore AC dedicato e il sezionatore DC dell’inverter siano entrambi su OFF prima di iniziare',
+    'Accendi le batterie collegate: la procedura cambia a seconda della marca (Pylontech, Azzurro o Weco), segui l’etichetta sul pacco batteria',
+    'Porta il sezionatore AC su ON e poi il sezionatore DC su ON per dare tensione all’inverter',
+    'Sul display dell’inverter, imposta la lingua (l’impostazione di fabbrica è l’inglese) e conferma data e ora',
+    'Importa il codice paese (country code): scarica la cartella "safety" dalla pagina di documentazione del tuo modello su zcsazzurro.com e caricala da chiavetta USB',
+    'Imposta il tipo di batteria collegata e la profondità di scarica dal menu Parametri Batteria, poi conferma su "Salvare" per completare la configurazione'
+  ],
+  zcsStringa: [
+    'Verifica che il sezionatore DC dell’inverter sia su OFF prima di iniziare',
+    'Porta il sezionatore DC su ON per dare tensione all’inverter',
+    'Sul display, imposta la lingua (l’impostazione di fabbrica è l’inglese) e conferma data e ora',
+    'Importa il codice paese (country code): scarica la cartella "safety" dalla pagina di documentazione del tuo modello su zcsazzurro.com e caricala da chiavetta USB',
+    'Verifica sul display che la produzione fotovoltaica venga rilevata correttamente'
+  ],
+  huawei: [
+    'Scarica e installa l’app FusionSolar (Play Store, App Store o Huawei AppGallery)',
+    'Al primo avvio, consenti all’app l’accesso a foto/file e alla posizione: servono per impostare automaticamente il codice paese e collegarsi al WiFi dell’inverter',
+    'Attiva il WiFi dello smartphone e collegati alla rete dell’inverter (visibile come SUN2000-numero di serie), oppure scansiona il QR code sull’etichetta',
+    'Segui la configurazione guidata dell’app: seleziona la tua rete WiFi di casa e inserisci la password per la connessione permanente',
+    'Seleziona il codice di rete (grid code) del tuo paese quando richiesto',
+    'Se presenti, aggiungi il misuratore di produzione e la batteria dall’elenco proposto dall’app',
+    'Lascia completare l’autotest dell’inverter, poi conferma per terminare la configurazione'
+  ],
+  fronius: [
+    'Premi una volta il sensore ottico sull’inverter per aprire il punto di accesso WiFi: il LED di comunicazione lampeggia blu',
+    'Scarica l’app Fronius Solar.start sullo smartphone e collegati alla rete WiFi dell’inverter',
+    'Segui la configurazione guidata (Setup Wizard): seleziona il paese e imposta data e ora di sistema',
+    'Collega l’inverter alla rete WiFi di casa (o via cavo Ethernet) per la connessione permanente',
+    'Da questo momento la configurazione può proseguire anche da browser, accedendo all’interfaccia web dell’inverter sulla rete locale'
+  ],
+  sma: [
+    'Porta il sezionatore DC in posizione ON per accendere l’inverter: il LED blu indica lo stato della connessione di rete',
+    'Collega lo smartphone o il PC alla rete WiFi dell’inverter (punto di accesso SMA visibile tra le reti disponibili), oppure collega l’inverter via cavo alla rete di casa',
+    'Apri un browser e accedi all’Installation Assistant dell’inverter, oppure usa l’app Sunny Portal, per avviare la configurazione guidata',
+    'Imposta il record dei dati nazionali (country code): è obbligatorio, altrimenti l’inverter non avvia l’immissione in rete',
+    'Collega l’inverter alla rete WiFi di casa per la connessione permanente a Sunny Portal',
+    'Registra l’impianto su Sunny Portal per completare la configurazione e abilitare il monitoraggio da remoto'
+  ],
+  zcsBatteria: [
+    'Assicurati che l’inverter ibrido ZCS abbinato sia spento (sezionatori AC e DC su OFF) prima di collegare i cavi di comunicazione e potenza della batteria',
+    'Accendi la batteria: per Pylontech porta su ON lo switch frontale di ogni modulo; per Azzurro o Weco premi il tasto POWER per 1 secondo su ciascun modulo finché il LED RUN si accende',
+    'Se sono collegati più moduli in parallelo, verifica che ognuno abbia un indirizzo diverso secondo le istruzioni del pacco batteria',
+    'Riaccendi l’inverter e vai su Menu → Impostazioni avanzate → Parametri Batteria (password 0715)',
+    'Seleziona il tipo di batteria collegata (Pylontech / Azzurro / Weco) e imposta la profondità di scarica desiderata',
+    'Conferma su "Salvare" per completare la configurazione della batteria sull’inverter'
+  ],
+  huaweiBatteria: [
+    'Collega la batteria LUNA2000 all’inverter SUN2000 tramite il cavo di comunicazione dedicato, seguendo lo schema del costruttore',
+    'Apri l’app FusionSolar e accedi alla configurazione guidata dell’inverter (Quick Settings)',
+    'Al passaggio "Add Battery", seleziona il tipo di batteria dall’elenco proposto dall’app',
+    'L’indirizzo di comunicazione viene impostato automaticamente dal sistema di gestione della batteria (BMS): verifica che corrisponda a quello indicato sull’etichetta del modulo',
+    'Premi "Next" per confermare, oppure "Ignora" se la batteria non è ancora installata in questa fase',
+    'Al termine, verifica lo stato di carica (SOC) della batteria dalla schermata principale dell’app'
+  ],
+  byd: [
+    'Prima di collegare la batteria, verifica sul sito BYD la "Compatible Inverter List" per assicurarti che il tuo inverter sia certificato per questo modello',
+    'Collega i moduli batteria e il BCU (Battery Control Unit) secondo lo schema di cablaggio, con tutti gli interruttori ancora su OFF',
+    'Accendi in sequenza: prima l’interruttore aria (Air Switch) sul BCU, poi l’inverter',
+    'Se il sistema è completamente spento, tieni premuto il tasto Black Start per 3 secondi per il primo avvio',
+    'Scarica l’app Be Connect 2.0 (Google Play o App Store) e segui la procedura guidata per completare la messa in servizio del sistema',
+    'Verifica tramite l’app o il display dell’inverter che tutti i moduli batteria siano riconosciuti correttamente prima di lasciare il sistema in funzione'
+  ],
+  growatt: [
+    'Per i modelli venduti in Italia il paese è già preimpostato in fabbrica: non serve configurarlo',
+    'Tocca il display per accenderlo: un tocco singolo cambia schermata o incrementa il valore, un doppio tocco conferma/entra nel menu, un triplo tocco torna al menu precedente',
+    'Vai su Menu → Generale → Lingua per impostare la lingua del display',
+    'Dallo stesso menu Generale, imposta data e ora',
+    'Se richiesto, imposta l’indirizzo di comunicazione (COM): di default è 1',
+    'Esegui l’Autotest, obbligatorio per l’Italia: Menu → Imposta parametri → Generale → Autotest → doppio tocco su "Attesa" e attendi l’esito'
+  ],
+  growattBatteria: [
+    'Collega la batteria all’inverter Growatt verificando che tutti i cablaggi (potenza e comunicazione CAN) siano corretti, con il sezionatore ancora su OFF',
+    'Chiudi il sezionatore del sistema di batterie portandolo su ON',
+    'Premi il pulsante di accensione (POWER) di uno qualsiasi dei moduli batteria per 3-5 secondi: se sono collegati più moduli in parallelo, si accendono tutti insieme',
+    'Osserva i LED: se RUN/ALM e SOC si accendono normalmente il sistema è partito correttamente; se RUN/ALM diventa rosso c’è un guasto da risolvere prima di proseguire',
+    'In alternativa puoi accendere il sistema direttamente dall’inverter: una volta acceso, l’inverter invia automaticamente il segnale che avvia la batteria',
+    'Dal display o dall’app Growatt, verifica che la batteria sia riconosciuta e che lo stato di carica (SOC) sia visualizzato correttamente'
+  ],
+  sungrow: [
+    'Scarica e installa l’app iSolarCloud (iOS o Android) e crea un account installatore, oppure chiedi le credenziali al tuo installatore se sei l’utente finale',
+    'Apri l’app, accedi e tocca "Crea impianto": inserisci nome, potenza installata, indirizzo, città, paese e fuso orario',
+    'Aggiungi il modulo di comunicazione scansionando il QR code presente sul dispositivo',
+    'Collega il modulo di comunicazione alla rete WiFi di casa: tocca "Rete" → seleziona la tua rete → inserisci la password → premi una volta il pulsante sul modulo seguendo le istruzioni a schermo',
+    'Vai su "Commissioning" → "Inizializzazione dispositivo", seleziona il paese/regione in base alla posizione dell’inverter e il gestore di rete, poi conferma',
+    'Verifica che la spia COM sia accesa fissa (connessione WiFi riuscita) e la spia NET sia accesa (connessione al server iSolarCloud riuscita)'
+  ],
+  solaredge: [
+    'Scarica l’app SetApp di SolarEdge e registrati/accedi: serve una connessione internet solo per la prima registrazione',
+    'Accendi tutti i dispositivi collegati (batteria, contatore di energia, Backup Interface) così l’inverter possa rilevarli automaticamente durante l’attivazione',
+    'Accendi l’interruttore AC sul quadro di distribuzione e il sezionatore DC dell’inverter, se presente',
+    'Apri SetApp, segui le istruzioni a schermo e scansiona il QR code dell’inverter',
+    'Tieni premuto l’interruttore P/1/0 in posizione "P" per 2 secondi e rilascia: l’app crea la connessione WiFi, aggiorna il firmware e attiva l’inverter',
+    'Durante il commissioning guidato: seleziona il codice paese/rete, lascia abbinare automaticamente gli ottimizzatori di potenza, configura la comunicazione di monitoraggio e aggiungi i dispositivi installati (batteria, Backup Interface, contatori, colonnina di ricarica)',
+    'Verifica l’attivazione: il LED verde dell’inverter deve restare acceso fisso e lo stato in app deve mostrare produzione di energia in corso'
+  ],
+  solaredgeBatteria: [
+    'Collega la batteria all’inverter SolarEdge secondo lo schema del costruttore: la batteria non ha una propria app di configurazione, viene gestita interamente dall’inverter a cui è collegata',
+    'Accendi la batteria portando l’interruttore ON/OFF/P in posizione ON prima di avviare la procedura sull’inverter',
+    'Apri SetApp sull’inverter e scansiona il QR code dell’inverter (non quello della batteria)',
+    'Nel Device Manager dell’app, la batteria comparirà tra i "Nuovi dispositivi trovati": selezionala per aggiungerla al sistema',
+    'Segui le istruzioni a schermo per completare le impostazioni, poi conferma per terminare',
+    'Verifica i LED sulla batteria: Power lampeggiante = standby/pairing DC in corso, fisso = carica/scarica normale; Comm fisso = comunicazione di rete riuscita'
+  ],
+  pylontech: [
+    'Verifica che la tensione e il protocollo di comunicazione dell’inverter siano compatibili con il sistema Pylontech e che tutti gli interruttori di potenza siano su OFF prima di collegare i cavi',
+    'Impila i moduli batteria e collega il modulo di controllo (BMS), cablando i cavi di comunicazione CAN o RS485 in cascata tra i moduli',
+    'Accendi il modulo di controllo (BMS) e verifica dai LED di stato che tutti i moduli collegati siano riconosciuti correttamente',
+    'Accendi l’inverter e verifica che rilevi automaticamente la batteria tramite il bus di comunicazione',
+    'Dal display o dall’app dell’inverter, seleziona il tipo di batteria Pylontech e conferma i parametri di carica/scarica proposti',
+    'Verifica lo stato di carica (SOC) e l’assenza di allarmi prima di lasciare il sistema in funzione'
+  ]
+};
+
+const INVERTER = [
+  { id:'sma', nome:'SMA', paese:'Germania', modelli:[
+    { id:'sma-sb36', nome:'Sunny Boy 3-6', potenza:'3.0 / 3.6 / 4.0 / 5.0 / 6.0 kW', tipo:'Monofase stringa, non ibrido', rev:'Rev. 5 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Boy 3-6','Sunny Portal / Sunny Explorer') },
+    { id:'sma-stp36', nome:'Sunny Tripower 3-6', potenza:'3.0 / 4.0 / 5.0 / 6.0 kW', tipo:'Trifase stringa, non ibrido, per abitazioni private', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower 3-6','Sunny Portal / Sunny Explorer') },
+    { id:'sma-stp810', nome:'Sunny Tripower 8-10', potenza:'8.0 / 10.0 kW', tipo:'Trifase stringa, non ibrido, per impianti domestici e piccolo commerciale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower 8-10','Sunny Portal / Sunny Explorer') },
+    { id:'sma-stpx25', nome:'Sunny Tripower X 25', potenza:'12 / 15 / 20 / 25 kW', tipo:'Trifase stringa, non ibrido, per grandi abitazioni e commerciale leggero', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower X 25','Sunny Portal / Sunny Explorer') },
+    { id:'sma-stpx60', nome:'Sunny Tripower X 60', potenza:'50 / 60 kW', tipo:'Trifase stringa, non ibrido, uso commerciale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower X 60','Sunny Portal / Sunny Explorer') },
+    { id:'sma-stp125', nome:'Sunny Tripower 125', potenza:'125 kW', tipo:'Trifase stringa, non ibrido, grandi impianti commerciali', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower 125','Sunny Portal / Sunny Explorer') },
+    { id:'sma-peak3', nome:'Sunny Highpower PEAK3', potenza:'100 / 150 / 172 / 180 kW', tipo:'Trifase stringa, non ibrido, uso commerciale/industriale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Highpower PEAK3','Sunny Portal / Sunny Explorer') },
+    { id:'sma-sbse', nome:'Sunny Boy Smart Energy', potenza:'3.6 / 4 / 5 / 6 / 8 / 9.9 kW', tipo:'Monofase ibrido, per abitazioni', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Boy Smart Energy','Sunny Portal / Sunny Explorer') },
+    { id:'sma-stse', nome:'Sunny Tripower Smart Energy', potenza:'5 / 6 / 8 / 10 kW', tipo:'Trifase ibrido, per abitazioni', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower Smart Energy','Sunny Portal / Sunny Explorer') },
+    { id:'sma-sthx-1', nome:'Sunny Tripower Hybrid X 5-15', potenza:'5 / 6 / 8 / 10 / 12 / 15 kW', tipo:'Trifase ibrido, per abitazioni private, gestione energetica integrata', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower Hybrid X 5-15','Sunny Portal / Sunny Explorer') },
+    { id:'sma-sthx-2', nome:'Sunny Tripower Hybrid X 20-30', potenza:'20 / 25 / 30 kW', tipo:'Trifase ibrido, per abitazioni e piccole imprese', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Tripower Hybrid X 20-30','Sunny Portal / Sunny Explorer') },
+    { id:'sma-si-x', nome:'Sunny Island X (SI30-20 / SI50-20)', potenza:'30 / 50 kW', tipo:'Inverter batteria AC-accoppiato, on-grid/off-grid, si abbina a qualsiasi inverter FV esistente', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Island X','Sunny Portal / Sunny Explorer') },
+    { id:'sma-si', nome:'Sunny Island (4.4M / 6.0H / 8.0H)', potenza:'4.4 / 6.0 / 8.0 kW', tipo:'Inverter batteria AC-accoppiato, funziona anche off-grid', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sma, sections: generaSchedaInverter('SMA','Sunny Island','Sunny Portal / Sunny Explorer') }
+  ]},
+  { id:'huawei', nome:'Huawei', paese:'Cina', modelli:[
+    { id:'hw-sun2000-lb0', nome:'SUN2000-3/3.68/4/4.6/5/6K-LB0', potenza:'3 / 3.68 / 4 / 4.6 / 5 / 6 kW', tipo:'Monofase ibrido residenziale compatto', rev:'Rev. 2 – set 2026', primaConfig: PRIMA_CONFIG.huawei, sections: generaSchedaInverter('Huawei','SUN2000 serie LB0','FusionSolar App') },
+    { id:'hw-sun2000-l1', nome:'SUN2000-2/3/3.68/4/4.6/5/6KTL-L1', potenza:'2 / 3 / 3.68 / 4 / 4.6 / 5 / 6 kW', tipo:'Monofase ibrido residenziale compatto', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.huawei, sections: generaSchedaInverter('Huawei','SUN2000 serie L1','FusionSolar App') },
+    { id:'hw-sun2000-map0', nome:'SUN2000-5/6/8/10/12K-MAP0', potenza:'5 / 6 / 8 / 10 / 12 kW', tipo:'Monofase ibrido residenziale', rev:'Rev. 2 – set 2026', primaConfig: PRIMA_CONFIG.huawei, sections: generaSchedaInverter('Huawei','SUN2000 serie MAP0','FusionSolar App') },
+    { id:'hw-sun2000-m1', nome:'SUN2000-3/4/5/6/8/10KTL-M1', potenza:'3 / 4 / 5 / 6 / 8 / 10 kW', tipo:'Trifase ibrido residenziale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.huawei, sections: generaSchedaInverter('Huawei','SUN2000 serie M1','FusionSolar App') },
+    { id:'hw-sun2000-mb0', nome:'SUN2000-12/15/17/20/25K-MB0', potenza:'12 / 15 / 17 / 20 / 25 kW', tipo:'Trifase ibrido, uso residenziale di taglia maggiore/commerciale leggero', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.huawei, sections: generaSchedaInverter('Huawei','SUN2000 serie MB0','FusionSolar App') },
+    { id:'hw-sun2000-150k', nome:'SUN2000-150K-MG0', potenza:'150 kW', tipo:'Trifase commerciale/industriale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.huawei, sections: generaSchedaInverter('Huawei','SUN2000-150K-MG0','FusionSolar App') }
+  ]},
+  { id:'fronius', nome:'Fronius', paese:'Austria', modelli:[
+    { id:'fr-primo', nome:'Fronius Primo', potenza:'3.0 / 3.6 / 3.8 / 4.0 / 4.6 / 5.0 / 6.0 / 7.6 / 8.2 kW', tipo:'Monofase stringa, non ibrido', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.fronius, sections: generaSchedaInverter('Fronius','Primo','Solar.web') },
+    { id:'fr-symo', nome:'Fronius Symo', potenza:'3.0 / 3.7 / 4.5 / 5.0 / 6.0 / 7.0 / 8.2 / 10.0 / 12.5 / 15.0 / 17.5 / 20.0 kW', tipo:'Trifase stringa, non ibrido', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.fronius, sections: generaSchedaInverter('Fronius','Symo','Solar.web') },
+    { id:'fr-primo-gen24-plus', nome:'Fronius Primo GEN24 Plus', potenza:'3.0 / 3.6 / 4.0 / 4.6 / 5.0 / 6.0 kW', tipo:'Monofase ibrido, 2 MPPT', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.fronius, sections: generaSchedaInverter('Fronius','Primo GEN24 Plus','Solar.web') },
+    { id:'fr-symo-gen24-plus', nome:'Fronius Symo GEN24 Plus', potenza:'3.0 / 4.0 / 5.0 / 6.0 / 8.0 / 10.0 kW', tipo:'Trifase ibrido, 2 MPPT', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.fronius, sections: generaSchedaInverter('Fronius','Symo GEN24 Plus','Solar.web') },
+    { id:'fr-symo-gen24-plus-big', nome:'Fronius Symo GEN24 Plus 10-20', potenza:'10.0 / 15.0 / 20.0 kW', tipo:'Trifase ibrido, uso commerciale leggero', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.fronius, sections: generaSchedaInverter('Fronius','Symo GEN24 Plus 10-20','Solar.web') },
+    { id:'fr-tauro', nome:'Fronius Tauro', potenza:'50 / 75 / 100 kW', tipo:'Trifase stringa, non ibrido, uso commerciale/industriale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.fronius, sections: generaSchedaInverter('Fronius','Tauro','Solar.web') }
+  ]},
+  { id:'solaredge', nome:'SolarEdge', paese:'Israele', modelli:[
+    { id:'se-hub', nome:'Inverter Hub SolarEdge Home', potenza:'4.0 / 5.0 / 6.0 / 8.0 / 10.0 kW (MultiRange, un solo codice prodotto per tutta la gamma monofase)', tipo:'Monofase, gestisce produzione FV, accumulo, backup e ricarica EV', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.solaredge, sections: generaSchedaInverter('SolarEdge','Inverter Hub','SetApp') },
+    { id:'se-wave', nome:'Inverter Wave SolarEdge Home', potenza:'3.0 / 3.5 / 3.68 / 4.0 / 5.0 / 6.0 kW (monofase, gamma UE)', tipo:'Monofase con ottimizzatori di potenza', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.solaredge, sections: generaSchedaInverter('SolarEdge','Inverter Wave','SetApp') },
+    { id:'se-wave-3ph', nome:'Inverter Wave SolarEdge Home Trifase', potenza:'3 / 4 / 5 / 6 / 7 / 8 / 9 / 10 kW', tipo:'Trifase con ottimizzatori di potenza', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.solaredge, sections: generaSchedaInverter('SolarEdge','Inverter Wave Trifase','SetApp') },
+    { id:'se-short-string', nome:'Inverter per stringhe corte SolarEdge Home', potenza:'3.0 / 4.0 / 5.0 kW (SE3K-RWB / SE4K-RWB / SE5K-RWB)', tipo:'Trifase, piccola taglia, maggiore flessibilità progettuale', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.solaredge, sections: generaSchedaInverter('SolarEdge','Inverter per stringhe corte','SetApp') },
+    { id:'se-commerciale', nome:'Inverter trifase commerciale', potenza:'12.5–27.6 kW (gamma SE12.5K–SE27.6K)', tipo:'Trifase, uso commerciale', rev:'Rev. 2 – set 2026', sections: generaSchedaInverter('SolarEdge','Inverter trifase commerciale','SetApp') },
+    { id:'se-synergy', nome:'Inverter trifase Synergy', potenza:'66.6 / 90 / 100 / 120 kW', tipo:'Trifase, design modulare, uso commerciale/industriale', rev:'Rev. 2 – set 2026', sections: generaSchedaInverter('SolarEdge','Inverter trifase Synergy','SetApp') }
+  ]},
+  { id:'growatt', nome:'Growatt', paese:'Cina', modelli:[
+    { id:'gw-mic-tlx', nome:'MIC TL-X', potenza:'0.75 / 1.0 / 1.5 / 2.0 / 2.5 / 3.0 / 3.3 kW', tipo:'Monofase stringa, non ibrido', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.growatt, sections: generaSchedaInverter('Growatt','MIC TL-X','ShinePhone') },
+    { id:'gw-min-tlx', nome:'MIN TL-X', potenza:'2.5 / 3.0 / 3.6 / 4.2 / 4.6 / 5.0 / 6.0 kW', tipo:'Monofase stringa, non ibrido', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.growatt, sections: generaSchedaInverter('Growatt','MIN TL-X','ShinePhone') },
+    { id:'gw-min-tlxh', nome:'MIN TL-XH', potenza:'2.5 / 3.0 / 3.6 / 4.2 / 4.6 / 5.0 / 6.0 kW', tipo:'Monofase ibrido, Battery Ready', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.growatt, sections: generaSchedaInverter('Growatt','MIN TL-XH','ShinePhone') },
+    { id:'gw-mod-tl3xh', nome:'MOD TL3-XH', potenza:'3 / 4 / 5 / 6 / 7 / 8 / 9 / 10 kW', tipo:'Trifase ibrido, Battery Ready', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.growatt, sections: generaSchedaInverter('Growatt','MOD TL3-XH','ShinePhone') },
+    { id:'gw-mid-tl3x1', nome:'MID TL3-X1', potenza:'25 / 30 / 33 / 36 / 40 kW', tipo:'Trifase stringa, non ibrido, uso commerciale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.growatt, sections: generaSchedaInverter('Growatt','MID TL3-X1','ShinePhone') },
+    { id:'gw-mid-tl3xh', nome:'MID TL3-XH', potenza:'12 / 13 / 15 / 17 / 20 / 25 / 30 kW', tipo:'Trifase ibrido, uso commerciale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.growatt, sections: generaSchedaInverter('Growatt','MID TL3-XH','ShinePhone') }
+  ]},
+  { id:'sungrow', nome:'Sungrow', paese:'Cina', modelli:[
+    { id:'sg-sh5rs', nome:'SH3.0/3.6/4.0/5.0/6.0RS', potenza:'3.0 / 3.6 / 4.0 / 5.0 / 6.0 kW', tipo:'Monofase ibrido, 2 MPPT', rev:'Rev. 5 – set 2026', primaConfig: PRIMA_CONFIG.sungrow, sections: generaSchedaInverter('Sungrow','SH-RS','iSolarCloud') },
+    { id:'sg-sh10rt', nome:'SH5.0/6.0/8.0/10RT', potenza:'5.0 / 6.0 / 8.0 / 10 kW', tipo:'Trifase ibrido, 2 MPPT', rev:'Rev. 5 – set 2026', primaConfig: PRIMA_CONFIG.sungrow, sections: generaSchedaInverter('Sungrow','SH-RT','iSolarCloud') },
+    { id:'sg-mgtl', nome:'MG10~25TL', potenza:'10 / 12 / 15 / 20 / 25 kW', tipo:'Trifase ibrido, gamma globale', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.sungrow, sections: generaSchedaInverter('Sungrow','MG-TL','iSolarCloud') }
+  ]},
+  { id:'zcs', nome:'ZCS', paese:'Italia', modelli:[
+    { id:'zcs-1ph-tlm', nome:'1PH 3000TLM-V3 / 6000TLM-V3', potenza:'3.0 / 3.68 / 4.0 / 4.6 / 5.0 / 6.0 kW', tipo:'Monofase stringa, non ibrido', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.zcsStringa, sections: generaSchedaInverter('ZCS','1PH TLM-V3','ZCS Smart Cloud App') },
+    { id:'zcs-3ph-ktlv3', nome:'3PH 3.3KTL-V3 / 12KTL-V3', potenza:'3.3 / 4.4 / 5.5 / 6.6 / 8.8 / 11 / 12 kW', tipo:'Trifase stringa compatta, non ibrido', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.zcsStringa, sections: generaSchedaInverter('ZCS','3PH KTL-V3 compatto','ZCS Smart Cloud App') },
+    { id:'zcs-3ph-ktlv3-com', nome:'3PH 25KTL-V3 / 50KTL-V3', potenza:'25 / 30 / 33 / 36 / 40 / 45 / 50 kW', tipo:'Trifase stringa, non ibrido, uso commerciale/industriale', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.zcsStringa, sections: generaSchedaInverter('ZCS','3PH KTL-V3 commerciale','ZCS Smart Cloud App') },
+    { id:'zcs-hyd-zsshp', nome:'HYD 3000-ZSS HP / 6000-ZSS HP', potenza:'3.0 / 3.68 / 4.0 / 4.6 / 5.0 / 6.0 kW', tipo:'Monofase ibrido, per accumulo', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.zcsIbrido, sections: generaSchedaInverter('ZCS','HYD ZSS HP','ZCS Smart Cloud App') },
+    { id:'zcs-hyd-5000-8000', nome:'HYD 5000-ZSS / 6000-ZSS / 8000-ZSS', potenza:'5 / 6 / 8 kW', tipo:'Trifase ibrido, per accumulo', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.zcsIbrido, sections: generaSchedaInverter('ZCS','HYD 5000/6000/8000-ZSS','ZCS Smart Cloud App') },
+    { id:'zcs-hyd-10000-20000', nome:'HYD 10000-ZSS / 15000-ZSS / 20000-ZSS', potenza:'10 / 15 / 20 kW', tipo:'Trifase ibrido, per accumulo, uso commerciale leggero', rev:'Rev. 3 – set 2026', primaConfig: PRIMA_CONFIG.zcsIbrido, sections: generaSchedaInverter('ZCS','HYD 10000/15000/20000-ZSS','ZCS Smart Cloud App') },
+    { id:'zcs-hyd-zp3', nome:'HYD 5000-ZP3 / 6000-ZP3 / 8000-ZP3 / 10000-ZP3 / 12000-ZP3', potenza:'5 / 6 / 8 / 10 / 12 kW', tipo:'Trifase ibrido, sistema di accumulo integrato compatto (famiglia Easy Power)', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.zcsIbrido, sections: generaSchedaInverter('ZCS','HYD ZP3','ZCS Smart Cloud App') },
+    { id:'zcs-bzt5000', nome:'1PH BZT5000', potenza:'3 kW nominale (retrofit)', tipo:'Monofase, retrofit per impianti esistenti', rev:'Rev. 1 – set 2026', primaConfig: PRIMA_CONFIG.zcsIbrido, sections: generaSchedaInverter('ZCS','1PH BZT5000','ZCS Smart Cloud App') }
+  ]}
+];
+
+const BATTERIE = [
+  { id:'byd', nome:'BYD', paese:'Cina', modelli:[
+    { id:'byd-hvs', nome:'Battery-Box Premium HVS', capacita:'5.1–12.8 kWh', tipo:'Alta tensione, modulare', rev:'Rev. 3 – lug 2026',
+      compatibiliIds:['fr-primo-gen24-plus','fr-symo-gen24-plus','fr-symo-gen24-plus-big','sg-sh5rs','sg-sh10rt','sma-sbse','sma-stse','sma-sthx-1','sma-sthx-2'],
+      incompatibiliNota:'Ufficialmente elencata da Fronius tra le batterie compatibili (insieme a Fronius Reserva e LG FLEX). Non compatibile con inverter a ecosistema chiuso come Huawei SUN2000 (richiede batterie LUNA2000) o ZCS (richiede le batterie ZCS dedicate). Con inverter non ibridi del catalogo (Fronius Primo/Symo/Tauro, SMA Sunny Boy 3.6/Tripower X, SolarEdge, Growatt MIC/MOD, ZCS stringa) non è possibile l’accoppiamento diretto in DC: serve un sistema di accumulo AC-accoppiato indipendente.',
+      primaConfig: PRIMA_CONFIG.byd,
+      sections: generaSchedaBatteria('BYD','Battery-Box Premium HVS','compatibile con gli inverter ibridi indicati in questa scheda tramite bus CAN') },
+    { id:'byd-hvm', nome:'Battery-Box Premium HVM', capacita:'8.3–22.1 kWh, modulare', tipo:'Alta tensione, taglio maggiorato', rev:'Rev. 2 – set 2026',
+      compatibiliIds:['fr-primo-gen24-plus','fr-symo-gen24-plus','fr-symo-gen24-plus-big','sg-sh5rs','sg-sh10rt','sma-sbse','sma-stse','sma-sthx-1','sma-sthx-2'],
+      incompatibiliNota:'Stesse esclusioni della HVS (nessuna compatibilità con Huawei o ZCS). Per impianti commerciali con fabbisogno superiore a 22 kWh è necessario affiancare più unità o più inverter in parallelo: verificare il numero massimo supportato dal modello di inverter scelto.',
+      primaConfig: PRIMA_CONFIG.byd,
+      sections: generaSchedaBatteria('BYD','Battery-Box Premium HVM','compatibile con gli inverter ibridi indicati in questa scheda tramite bus CAN, stessa famiglia della HVS') }
+  ]},
+  { id:'pylontech', nome:'Pylontech', paese:'Cina', modelli:[
+    { id:'pt-us5000', nome:'US5000', capacita:'4.8 kWh per modulo, stackable fino a 15 moduli', tipo:'Bassa tensione (48V), stackable', rev:'Rev. 4 – ago 2026',
+      compatibiliIds:['sg-sh5rs','sg-sh10rt'],
+      incompatibiliNota:'Linea a bassa tensione, alternativa più economica alla Force H2 per impianti più semplici. Non certificata in questo catalogo con Huawei SUN2000, ZCS o Fronius GEN24. L’attuale gamma ibrida SMA (Smart Energy, Tripower Hybrid X) è ad alta tensione: per abbinarla a SMA serve la Force H2, non la US5000.',
+      primaConfig: PRIMA_CONFIG.pylontech,
+      sections: generaSchedaBatteria('Pylontech','US5000','moduli impilabili a bassa tensione, verificare il numero massimo di moduli supportato dall’inverter') },
+    { id:'pt-forceh2', nome:'Force H2', capacita:'7.1–42.6 kWh', tipo:'Alta tensione, modulare', rev:'Rev. 2 – giu 2026',
+      compatibiliIds:['sg-sh5rs','sg-sh10rt','sma-sbse','sma-stse','sma-sthx-1','sma-sthx-2'],
+      incompatibiliNota:'Non certificata in questo catalogo con Huawei SUN2000, ZCS o Fronius GEN24. Con inverter non ibridi (SMA Sunny Boy 3.6/Tripower X, SolarEdge, Growatt MIC/MOD, ZCS stringa) non è possibile l’accoppiamento diretto in DC.',
+      primaConfig: PRIMA_CONFIG.pylontech,
+      sections: generaSchedaBatteria('Pylontech','Force H2','richiede protocollo CAN dedicato, verificare la lista di compatibilità con l’inverter abbinato') }
+  ]},
+  { id:'lg', nome:'LG Energy Solution', paese:'Corea del Sud', modelli:[
+    { id:'lg-resu10', nome:'RESU10 Prime', capacita:'9.6 kWh', tipo:'Bassa tensione', rev:'Rev. 5 – mag 2026',
+      compatibiliIds:[],
+      incompatibiliNota:'Con inverter SolarEdge l’abbinamento è possibile solo tramite Backup Interface dedicata (accessorio aggiuntivo non incluso). La RESU è a bassa tensione: storicamente si abbinava al vecchio Sunny Boy Storage SMA, ma la gamma ibrida SMA attuale (Smart Energy, Tripower Hybrid X) è ad alta tensione e non è compatibile. Con Fronius il prodotto LG ufficialmente certificato è la LG FLEX (scheda separata in questo catalogo), non la RESU10 Prime. Non compatibile nemmeno con Huawei SUN2000, ZCS, Sungrow o Growatt in questo catalogo.',
+      sections: generaSchedaBatteria('LG Energy Solution','RESU10 Prime','compatibile solo con gli inverter certificati indicati in questa scheda') },
+    { id:'lg-resu16', nome:'RESU16', capacita:'16 kWh', tipo:'Bassa tensione, taglio maggiorato', rev:'Rev. 3 – mag 2026',
+      compatibiliIds:[],
+      incompatibiliNota:'Stesse esclusioni della RESU10 Prime: con Fronius il prodotto certificato è la LG FLEX, non la RESU16.',
+      sections: generaSchedaBatteria('LG Energy Solution','RESU16','compatibile solo con gli inverter certificati indicati in questa scheda') },
+    { id:'lg-flex', nome:'LG FLEX', capacita:'da verificare sulla scheda tecnica LG (non pubblicata sulla pagina compatibilità Fronius)', tipo:'Alta tensione, linea certificata Fronius', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['fr-primo-gen24-plus','fr-symo-gen24-plus','fr-symo-gen24-plus-big'],
+      incompatibiliNota:'È il prodotto LG ufficialmente elencato da Fronius tra le batterie compatibili, diverso dalla linea RESU venduta con altri inverter. Non risulta certificata con Huawei SUN2000, ZCS, Sungrow, Growatt o SMA in questo catalogo.',
+      sections: generaSchedaBatteria('LG Energy Solution','LG FLEX','linea certificata da Fronius, verificare capacità e taglie sulla documentazione ufficiale') }
+  ]},
+  { id:'fronius-batt', nome:'Fronius', paese:'Austria', modelli:[
+    { id:'fr-reserva', nome:'Fronius Reserva', capacita:'da verificare sulla scheda tecnica Fronius (non pubblicata sulla pagina compatibilità)', tipo:'Batteria a marchio proprio Fronius', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['fr-primo-gen24-plus','fr-symo-gen24-plus','fr-symo-gen24-plus-big'],
+      incompatibiliNota:'Batteria a marchio Fronius, pensata per l’integrazione più semplice con la gamma ibrida Primo/Symo GEN24 Plus. Non ha senso abbinarla a inverter di altre marche.',
+      sections: generaSchedaBatteria('Fronius','Reserva','batteria a marchio proprio, pensata per l’ecosistema ibrido Fronius indicato in questa scheda') }
+  ]},
+  { id:'sungrow-batt', nome:'Sungrow', paese:'Cina', modelli:[
+    { id:'sg-sbh', nome:'SBR064–256', capacita:'6.4–25.6 kWh, modulare', tipo:'Alta tensione, batteria LFP a marchio proprio', rev:'Rev. 2 – set 2026',
+      compatibiliIds:['sg-sh5rs','sg-sh10rt'],
+      incompatibiliNota:'Batteria a marchio Sungrow, pensata per l’abbinamento più semplice con la gamma ibrida SH-RS/SH-RT: inverter e batteria dello stesso costruttore, un solo interlocutore per la garanzia. Non certificata con inverter di altre marche in questo catalogo.',
+      sections: generaSchedaBatteria('Sungrow','SBH100-400','batteria a marchio proprio, pensata per l’ecosistema ibrido Sungrow indicato in questa scheda') }
+  ]},
+  { id:'growatt-batt', nome:'Growatt', paese:'Cina', modelli:[
+    { id:'gw-axe5l', nome:'AXE 5.0L', capacita:'5.0 kWh per modulo, modulare', tipo:'Bassa tensione, modulare', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['gw-min-tlxh'],
+      incompatibiliNota:'Linea a bassa tensione, pensata per l’ibrido monofase MIN TL-XH. Non ha una porta batteria sugli inverter stringa non ibridi MIC TL-X/MIN TL-X/MID TL3-X1 di questo catalogo.',
+      primaConfig: PRIMA_CONFIG.growattBatteria,
+      sections: generaSchedaBatteria('Growatt','AXE 5.0L','batteria a bassa tensione, pensata per l’ibrido monofase Growatt indicato in questa scheda') },
+    { id:'gw-apx-s0', nome:'APX 5.0-30.0P-S0', capacita:'5–30 kWh, modulare', tipo:'Alta tensione, monofase', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['gw-min-tlxh'],
+      incompatibiliNota:'Variante S0 pensata per l’abbinamento monofase (MIN TL-XH/XH2). Non compatibile con gli ibridi trifase MOD/MID TL3-XH, che richiedono la variante S2.',
+      primaConfig: PRIMA_CONFIG.growattBatteria,
+      sections: generaSchedaBatteria('Growatt','APX 5.0-30.0P-S0','batteria ad alta tensione monofase, pensata per l’ibrido MIN TL-XH indicato in questa scheda') },
+    { id:'gw-apx-s2', nome:'APX 5.0-30.0P-S2', capacita:'5–30 kWh, modulare', tipo:'Alta tensione, trifase', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['gw-mod-tl3xh','gw-mid-tl3xh'],
+      incompatibiliNota:'Variante S2 pensata per l’abbinamento trifase (MOD TL3-XH, MID TL3-XH). Non compatibile con l’ibrido monofase MIN TL-XH, che richiede la variante S0.',
+      primaConfig: PRIMA_CONFIG.growattBatteria,
+      sections: generaSchedaBatteria('Growatt','APX 5.0-30.0P-S2','batteria ad alta tensione trifase, pensata per gli ibridi trifase Growatt indicati in questa scheda') },
+    { id:'gw-nexa2000', nome:'NEXA 2000 IT', capacita:'da verificare sulla scheda tecnica Growatt', tipo:'Sistema di accumulo tutto-in-uno', rev:'Rev. 1 – set 2026',
+      compatibiliIds:[],
+      incompatibiliNota:'Sistema all-in-one con elettronica di conversione integrata: non si abbina a un inverter Growatt separato come le linee AXE/APX.',
+      sections: generaSchedaBatteria('Growatt','NEXA 2000 IT','sistema tutto-in-uno, non richiede un inverter Growatt separato') }
+  ]},
+  { id:'tesla', nome:'Tesla', paese:'Stati Uniti', modelli:[
+    { id:'tesla-pw3', nome:'Powerwall 3', capacita:'13.5 kWh', tipo:'Integrato con inverter proprio', rev:'Rev. 2 – set 2026',
+      compatibiliIds:[],
+      incompatibiliNota:'Ha un inverter integrato: non si abbina a un inverter FV esistente nel senso tradizionale. Può sostituire l’inverter lato stringhe oppure essere installato in accoppiamento AC accanto a un inverter già presente, indipendentemente dalla marca.',
+      sections: generaSchedaBatteria('Tesla','Powerwall 3','include inverter integrato, non richiede abbinamento con inverter FV esterno') },
+    { id:'tesla-pw3-exp', nome:'Powerwall 3 Expansion', capacita:'13.5 kWh (modulo aggiuntivo)', tipo:'Modulo di espansione, richiede un Powerwall 3 base', rev:'Rev. 1 – set 2026',
+      compatibiliIds:[],
+      incompatibiliNota:'Non è un’unità autonoma: si collega esclusivamente a un Powerwall 3 già installato, fino a un massimo di unità stabilito dal costruttore. Stesse regole di abbinamento del modello base.',
+      sections: generaSchedaBatteria('Tesla','Powerwall 3 Expansion','si collega solo a un Powerwall 3 base già installato, non a un inverter FV esterno') }
+  ]},
+  { id:'huawei-batt', nome:'Huawei', paese:'Cina', modelli:[
+    { id:'hw-luna2000-s0', nome:'LUNA2000-5/10/15-S0', capacita:'5 / 10 / 15 kWh', tipo:'Alta tensione, modulare, gamma entry-level', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['hw-sun2000-lb0','hw-sun2000-l1'],
+      incompatibiliNota:'Abbinamento con la gamma compatta LB0/L1 dedotto dalla logica di prodotto Huawei (non pubblicato come elenco esplicito sul sito): verificare sempre la lista di compatibilità aggiornata prima di ordinare. Ecosistema chiuso Huawei: nessuna compatibilità con inverter di altre marche.',
+      primaConfig: PRIMA_CONFIG.huaweiBatteria,
+      sections: generaSchedaBatteria('Huawei','LUNA2000 serie S0','pensata per abbinamento con la gamma Huawei compatta indicata in questa scheda') },
+    { id:'hw-luna2000-s1', nome:'LUNA2000-5/7/10/12/14/15/17/19/21-S1', capacita:'5 / 7 / 10 / 12 / 14 / 15 / 17 / 19 / 21 kWh', tipo:'Alta tensione, modulare, con ottimizzazione Module+', rev:'Rev. 2 – set 2026',
+      compatibiliIds:['hw-sun2000-map0','hw-sun2000-m1','hw-sun2000-mb0'],
+      incompatibiliNota:'Abbinamento con MAP0/MB0 confermato dalle raccomandazioni ufficiali Huawei; l’estensione al trifase M1 è dedotta per coerenza di gamma e va verificata sul datasheet. Ecosistema chiuso Huawei: non certificata con inverter di altre marche né con il commerciale SUN2000-150K-MG0, che richiede la linea BESS C&I dedicata.',
+      primaConfig: PRIMA_CONFIG.huaweiBatteria,
+      sections: generaSchedaBatteria('Huawei','LUNA2000 serie S1','pensata per abbinamento nativo con gli inverter Huawei residenziali/commerciali leggeri indicati in questa scheda') },
+    { id:'hw-luna2000-241', nome:'LUNA2000-241 (BESS C&I)', capacita:'taglia commerciale/industriale, raffreddamento ibrido a liquido', tipo:'Alta tensione, uso commerciale/industriale', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['hw-sun2000-150k'],
+      incompatibiliNota:'Pensata per impianti commerciali e industriali: richiede l’inverter Huawei SUN2000-150K-MG0 o altri modelli della serie commerciale, non compatibile con la gamma residenziale di questo catalogo.',
+      primaConfig: PRIMA_CONFIG.huaweiBatteria,
+      sections: generaSchedaBatteria('Huawei','LUNA2000-241','pensata per abbinamento nativo con l’inverter Huawei commerciale indicato in questa scheda') }
+  ]},
+  { id:'solaredge-batt', nome:'SolarEdge', paese:'Israele', modelli:[
+    { id:'se-batt400v', nome:'Batteria 400V SolarEdge Home', capacita:'da verificare sulla scheda tecnica SolarEdge', tipo:'Alta tensione (400V), per inverter monofase', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['se-hub','se-wave'],
+      incompatibiliNota:'Si collega solo agli inverter monofase SolarEdge Home (Hub, Wave). Non compatibile con l’inverter trifase per stringhe corte, che richiede la Batteria 48V, né con inverter di altre marche.',
+      primaConfig: PRIMA_CONFIG.solaredgeBatteria,
+      sections: generaSchedaBatteria('SolarEdge','Batteria 400V','collegabile solo agli inverter monofase SolarEdge Home indicati in questa scheda') },
+    { id:'se-batt48v', nome:'Batteria 48V SolarEdge Home', capacita:'da verificare sulla scheda tecnica SolarEdge', tipo:'Bassa tensione (48V), per inverter trifase', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['se-short-string','se-wave-3ph'],
+      incompatibiliNota:'Si collega agli inverter trifase SolarEdge Home (stringhe corte, Wave Trifase). Non compatibile con gli inverter monofase (Hub, Wave), che richiedono la Batteria 400V, né con inverter di altre marche.',
+      primaConfig: PRIMA_CONFIG.solaredgeBatteria,
+      sections: generaSchedaBatteria('SolarEdge','Batteria 48V','collegabile solo all’inverter trifase SolarEdge Home indicato in questa scheda') }
+  ]},
+  { id:'zcs-batt', nome:'ZCS', paese:'Italia', modelli:[
+    { id:'zcs-zsxlv', nome:'Azzurro ZSX LV', capacita:'bassa tensione, modulare fino a 30 kWh totali in parallelo', tipo:'Bassa tensione', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['zcs-bzt5000','zcs-hyd-zsshp'],
+      incompatibiliNota:'Architettura a bassa tensione, pensata per la linea retrofit e per l’ibrido monofase HYD ZSS HP. Non compatibile con gli inverter monofase/trifase non ibridi del catalogo ZCS (nessuna porta batteria). Verificare sempre il datasheet ZCS aggiornato per la combinazione esatta, perché ZCS rivede periodicamente le liste di compatibilità.',
+      primaConfig: PRIMA_CONFIG.zcsBatteria,
+      sections: generaSchedaBatteria('ZCS','Azzurro ZSX LV','pensata per la linea ZCS a bassa tensione (retrofit e ibrido monofase) indicata in questa scheda') },
+    { id:'zcs-hvzbt5k', nome:'HV ZBT 5K', capacita:'5 kWh per modulo, espandibile, 1-6 moduli (5.1–30.6 kWh)', tipo:'Alta tensione, modulare', rev:'Rev. 2 – set 2026',
+      compatibiliIds:['zcs-hyd-5000-8000','zcs-hyd-10000-20000','zcs-hyd-zp3'],
+      incompatibiliNota:'Architettura ad alta tensione, pensata per gli ibridi trifase HYD ZSS e HYD ZP3 (la scheda tecnica ZP3 indica la HV ZBT 5K come unica batteria compatibile). Non compatibile con l’ibrido monofase HYD ZSS HP né con gli inverter non ibridi del catalogo ZCS. Verificare sempre il datasheet ZCS aggiornato prima di ordinare.',
+      primaConfig: PRIMA_CONFIG.zcsBatteria,
+      sections: generaSchedaBatteria('ZCS','HV ZBT 5K','pensata per la linea ZCS ibrida trifase ad alta tensione indicata in questa scheda') },
+    { id:'zcs-hvsmart5k', nome:'ZCS Azzurro HV Smart 5K', capacita:'5 kWh per modulo, espandibile, BMS avanzato', tipo:'Alta tensione, modulare', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['zcs-hyd-5000-8000','zcs-hyd-10000-20000'],
+      incompatibiliNota:'Stessa architettura e stesse esclusioni della HV ZBT 5K: pensata per gli ibridi trifase HYD ZSS, non per il monofase HYD ZSS HP né per gli inverter non ibridi. Non compatibile con la linea HYD ZP3, che secondo la scheda tecnica accetta solo la batteria HV ZBT 5K.',
+      primaConfig: PRIMA_CONFIG.zcsBatteria,
+      sections: generaSchedaBatteria('ZCS','Azzurro HV Smart 5K','pensata per la linea ZCS ibrida trifase ad alta tensione indicata in questa scheda') },
+    { id:'zcs-pylontech-hv', nome:'Pylontech HV (rivenduta da ZCS)', capacita:'variabile secondo la gamma Pylontech HV', tipo:'Alta tensione, modulare, certificata ZCS', rev:'Rev. 1 – set 2026',
+      compatibiliIds:['zcs-hyd-5000-8000','zcs-hyd-10000-20000'],
+      incompatibiliNota:'Opzione di terze parti certificata da ZCS per la linea ibrida trifase ad alta tensione. Non è la stessa gamma Pylontech venduta a marchio proprio: verificare sempre che il firmware dell’inverter ZCS sia aggiornato alla versione compatibile. Non compatibile con la linea HYD ZP3, che secondo la scheda tecnica accetta solo la batteria HV ZBT 5K.',
+      primaConfig: PRIMA_CONFIG.zcsBatteria,
+      sections: generaSchedaBatteria('ZCS','Pylontech HV (certificata ZCS)','opzione di terze parti certificata per la linea ZCS ibrida trifase ad alta tensione') }
+  ]}
+];
+
+const COLONNINE = [
+  { id:'growatt-ev', nome:'Growatt', paese:'Cina', modelli:[
+    { id:'gw-thor-ac', nome:'THOR 07-22-EW1', potenza:'7–22 kW', tipo:'AC, mono/trifase, connettore Tipo 2', rev:'Rev. 1 – set 2026',
+      integrazioneFV:'Integrazione nativa con inverter e batteria Growatt tramite l’app ShinePhone/Growatt: la colonnina legge la produzione FV e lo stato della batteria quando presente.',
+      modalitaSolare:'Solo eccedenza FV o modalità mista, secondo la configurazione impostata da app', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('Growatt ShinePhone App') },
+    { id:'gw-thor-dc', nome:'THOR 40DS-P / 40DD-P', potenza:'40 kW', tipo:'DC, ricarica veloce, uso commerciale', rev:'Rev. 1 – set 2026',
+      integrazioneFV:'Pensata per la ricarica rapida commerciale: il collegamento all’impianto FV esistente passa dall’ecosistema Growatt, ma l’uso principale resta la potenza di ricarica più che l’ottimizzazione dell’autoconsumo.',
+      modalitaSolare:'Manuale o programmata; la modalità "solo eccedenza" non è il caso d’uso principale per la ricarica rapida DC', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('Growatt ShinePhone App') }
+  ]},
+  { id:'zcs-ev', nome:'ZCS', paese:'Italia', modelli:[
+    { id:'zcs-caro', nome:'Stazioni di Ricarica Caro', potenza:'7–22 kW', tipo:'AC, mono/trifase, connettore Tipo 2', rev:'Rev. 1 – set 2026',
+      integrazioneFV:'Integrazione nativa con inverter e datalogger ZCS Azzurro tramite Smart Cloud: la colonnina legge la produzione FV in tempo reale senza bisogno di un misuratore aggiuntivo.',
+      modalitaSolare:'Solo eccedenza FV con soglia regolabile, oppure Eco boost (integra la rete se la produzione non basta)', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('ZCS Smart Cloud App') },
+    { id:'zcs-dc30k', nome:'Serie DC 30K Core', potenza:'30 kW', tipo:'DC, ricarica veloce, uso commerciale', rev:'Rev. 1 – set 2026',
+      integrazioneFV:'Pensata per la ricarica rapida commerciale (centri commerciali, ristorazione): il collegamento all’impianto FV esistente passa dall’ecosistema ZCS Smart Cloud, ma l’uso principale resta la potenza di ricarica più che l’ottimizzazione dell’autoconsumo.',
+      modalitaSolare:'Manuale o programmata; la modalità "solo eccedenza" non è il caso d’uso principale per la ricarica rapida DC', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('ZCS Smart Cloud App') },
+    { id:'zcs-dc40k', nome:'EV Charge DC 40kW Mobox', potenza:'40 kW', tipo:'DC, ricarica veloce (novità 2026)', rev:'Rev. 1 – set 2026',
+      integrazioneFV:'Stesso principio della Serie DC 30K Core: collegamento all’ecosistema ZCS Smart Cloud, priorità alla velocità di ricarica.',
+      modalitaSolare:'Manuale o programmata; la modalità "solo eccedenza" non è il caso d’uso principale per la ricarica rapida DC', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('ZCS Smart Cloud App') },
+    { id:'zcs-dc60-120', nome:'EV Charger 60kW & 120kW', potenza:'60 / 120 kW', tipo:'DC, ricarica ultra-veloce, uso commerciale/industriale', rev:'Rev. 1 – set 2026',
+      integrazioneFV:'Pensata per hub di ricarica pubblici o flotte aziendali: l’integrazione con un impianto FV serve più per il monitoraggio dei consumi complessivi del sito che per la ricarica a eccedenza.',
+      modalitaSolare:'Manuale o programmata secondo le fasce orarie del sito', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('ZCS Smart Cloud App') }
+  ]},
+  { id:'wallbox', nome:'Wallbox', paese:'Spagna', modelli:[
+    { id:'wb-pulsar', nome:'Pulsar Plus', potenza:'7.4 / 11 kW', tipo:'Mono/trifase, connettore Tipo 2, Wi-Fi e Bluetooth', rev:'Rev. 5 – lug 2026',
+      integrazioneFV:'Integrazione tramite kit Power Boost con pinza amperometrica sul quadro generale, compatibile con la maggior parte degli inverter perché legge i consumi domestici invece di dialogare direttamente con l’inverter.',
+      modalitaSolare:'Eco Smart: adegua in automatico la potenza di ricarica in base all’eccedenza fotovoltaica disponibile', v2g:null,
+      accessorioRichiesto:'Kit Power Boost con pinza amperometrica sul quadro generale',
+      sections: generaSchedaColonnina('myWallbox App') },
+    { id:'wb-quasar2', nome:'Quasar 2', potenza:'7.4 / 11 kW bidirezionale', tipo:'Connettore Tipo 2, ricarica e scarica bidirezionale', rev:'Rev. 3 – giu 2026',
+      integrazioneFV:'Si integra con l’ecosistema myWallbox per bilanciare produzione FV, accumulo domestico e veicolo in tempo reale.',
+      modalitaSolare:'Solo eccedenza FV oppure programmazione oraria personalizzata', v2g:'Sì — restituisce energia dal veicolo alla casa (V2H) o alla rete (V2G)',
+      accessorioRichiesto:'Kit Power Boost con pinza amperometrica (necessario anche con V2G attivo per la lettura dell’eccedenza)',
+      sections: generaSchedaColonnina('myWallbox App') }
+  ]},
+  { id:'fronius-ev', nome:'Fronius', paese:'Austria', modelli:[
+    { id:'fr-wattpilot', nome:'Wattpilot', potenza:'11 / 22 kW', tipo:'Trifase, connettore Tipo 2', rev:'Rev. 4 – ago 2026',
+      integrazioneFV:'Integrazione nativa con gli inverter Fronius tramite Solar.web e Fronius Smart Meter: nessun dispositivo di terze parti necessario per leggere la produzione FV.',
+      modalitaSolare:'Eco (solo eccedenza), Next Trip (ricarica minima garantita per il prossimo viaggio) o Full (potenza massima da rete)', v2g:null,
+      accessorioRichiesto:'Fronius Smart Meter, solo se non già presente nell’impianto',
+      sections: generaSchedaColonnina('Fronius Solar.web') }
+  ]},
+  { id:'solaredge-ev', nome:'SolarEdge', paese:'Israele', modelli:[
+    { id:'se-evcharger', nome:'EV Charger DC-coupled', potenza:'7.2 kW (lato DC)', tipo:'Collegamento DC dietro l’inverter, integrato nell’ecosistema SolarEdge', rev:'Rev. 2 – mag 2026',
+      integrazioneFV:'Nella variante DC-coupled la ricarica avviene direttamente dalla produzione FV senza la doppia conversione DC-AC-DC, riducendo le perdite; gestita dallo stesso inverter SolarEdge tramite l’app mySolarEdge.',
+      modalitaSolare:'Solo eccedenza FV oppure boost programmato dall’app mySolarEdge', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('mySolarEdge App') }
+  ]},
+  { id:'zaptec', nome:'Zaptec', paese:'Norvegia', modelli:[
+    { id:'zaptec-go', nome:'Zaptec Go', potenza:'7.4 / 22 kW', tipo:'Connettore Tipo 2, gestione carico dinamica multi-colonnina', rev:'Rev. 3 – lug 2026',
+      integrazioneFV:'Integrazione tramite Zaptec Cloud con lettura dei dati di produzione da inverter compatibili o da un misuratore esterno certificato.',
+      modalitaSolare:'Smart charging con priorità all’eccedenza FV quando abbinata al modulo Zaptec Sign', v2g:null,
+      accessorioRichiesto:'Modulo Zaptec Sign per la lettura del misuratore di produzione',
+      sections: generaSchedaColonnina('Zaptec Cloud') }
+  ]},
+  { id:'huawei-ev', nome:'Huawei', paese:'Cina', modelli:[
+    { id:'hw-acharger', nome:'Huawei AC Charger', potenza:'7 / 22 kW', tipo:'Mono/trifase, connettore Tipo 2', rev:'Rev. 2 – ago 2026',
+      integrazioneFV:'Integrazione nativa con gli inverter Huawei SUN2000 (gamma LB0/MAP0) e la batteria LUNA2000 tramite l’app FusionSolar: la colonnina riceve i dati di produzione e stato di carica della batteria senza misuratori aggiuntivi.',
+      modalitaSolare:'Solo eccedenza FV oppure Ricarica intelligente, che bilancia la priorità tra accumulo domestico e veicolo secondo le regole impostate dall’utente', v2g:null,
+      accessorioRichiesto:null,
+      sections: generaSchedaColonnina('Huawei FusionSolar App') }
+  ]}
+];
+
+const modelIndex = {};
+[
+  ...INVERTER.map(b => ({ b, cat:'inverter' })),
+  ...BATTERIE.map(b => ({ b, cat:'batteria' })),
+  ...COLONNINE.map(b => ({ b, cat:'colonnina' }))
+].forEach(({b, cat}) => b.modelli.forEach(m => { modelIndex[m.id] = { brand:b, model:m, category:cat }; }));
+const updateIndex = {};
+UPDATES.forEach(u => updateIndex[u.id] = u);
+
+/* ---------- state ---------- */
+const state = {
+  screen: 'feed-list',
+  filterTipo: 'tutti',
+  filterAmbito: 'tutti',
+  query: '',
+  currentUpdateId: null,
+  marcheCategory: 'inverter',
+  currentBrandId: null,
+  currentModelId: null,
+  checkedSteps: new Set(),
+};
+
+function getSaved(){
+  try{
+    const raw = localStorage.getItem('irradia_saved');
+    if(raw === null){
+      const seed = [{kind:'update', id:'n1'}, {kind:'model', id:'sma-sthx-1'}];
+      localStorage.setItem('irradia_saved', JSON.stringify(seed));
+      return seed;
+    }
+    return JSON.parse(raw);
+  }catch(e){ return []; }
+}
+function setSaved(arr){ try{ localStorage.setItem('irradia_saved', JSON.stringify(arr)); }catch(e){} }
+function isSaved(kind, id){ return getSaved().some(s => s.kind === kind && s.id === id); }
+function toggleSaved(kind, id){
+  let saved = getSaved();
+  if(saved.some(s => s.kind===kind && s.id===id)){
+    saved = saved.filter(s => !(s.kind===kind && s.id===id));
+  } else {
+    saved.push({kind, id});
+  }
+  setSaved(saved);
+  render();
+}
+
+function navTo(screen){
+  state.screen = screen;
+  if(screen === 'marche-list'){ state.currentBrandId = null; state.currentModelId = null; }
+  render();
+}
+
+/* ---------- render helpers ---------- */
+function renderUpdateCard(u){
+  const days = u.scadenza ? daysUntil(u.scadenza) : null;
+  const tone = days !== null ? toneForDays(days) : 'info';
+  const dateLabel = u.dateLabel || (u.type === 'bando' ? 'Scadenza' : 'In vigore dal');
+  const saved = isSaved('update', u.id);
+  const daysText = days === null ? '' : days < 0 ? 'Scaduto' : days === 0 ? 'Scade oggi' : `tra ${days} g`;
+  return `
+  <div class="card" data-open-update="${u.id}">
+    <div class="card-top">
+      <span class="pill pill-type-${u.type}">${typeLabel(u.type)}</span>
+      <span class="pill pill-ambito">${u.ambito === 'entrambi' ? 'Civile + industriale' : u.ambito === 'civile' ? 'Civile' : 'Industriale'}</span>
+      <button class="star-btn ${saved ? 'saved' : ''}" data-toggle-star="update:${u.id}" aria-label="Salva">
+        ${saved ? icon('starFill') : icon('star')}
+      </button>
+    </div>
+    <div class="card-title">${u.title}</div>
+    <div class="card-sintesi">${u.sottotitolo}</div>
+    <div class="card-meta">
+      <span>${icon('building')} ${u.ente.split(' –')[0]}</span>
+      <span>${icon('calendar')} ${dateLabel}: <b>${u.scadenza ? fmtDate(u.scadenza) : (u.scadenzaNota || 'A sportello')}</b></span>
+      ${days !== null ? `<span class="pill tone-${tone}">${daysText}</span>` : (u.type === 'bando' ? `<span class="pill tone-info">A sportello</span>` : '')}
+    </div>
+  </div>`;
+}
+
+function currentFeed(){
+  return UPDATES.filter(u => {
+    if(state.filterTipo !== 'tutti' && u.type !== state.filterTipo) return false;
+    if(state.filterAmbito !== 'tutti' && u.ambito !== 'entrambi' && u.ambito !== state.filterAmbito) return false;
+    if(state.query){
+      const q = state.query.toLowerCase();
+      if(!u.title.toLowerCase().includes(q) && !u.ente.toLowerCase().includes(q) && !u.sottotitolo.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b) => new Date(b.pubblicato) - new Date(a.pubblicato));
+}
+
+function renderFeedList(){
+  const items = currentFeed();
+  return `
+  <div class="chiprow">
+    <div class="chipgroup">
+      <button class="chip ${state.filterTipo==='tutti'?'active':''}" data-filter-tipo="tutti">Tutti</button>
+      <button class="chip ${state.filterTipo==='bando'?'active':''}" data-filter-tipo="bando">Bandi</button>
+      <button class="chip ${state.filterTipo==='norma'?'active':''}" data-filter-tipo="norma">Norme</button>
+      <button class="chip ${state.filterTipo==='cer'?'active':''}" data-filter-tipo="cer">CER</button>
+    </div>
+    <div class="chipgroup">
+      <button class="chip ${state.filterAmbito==='tutti'?'active':''}" data-filter-ambito="tutti">Tutti gli ambiti</button>
+      <button class="chip ${state.filterAmbito==='civile'?'active':''}" data-filter-ambito="civile">Civile</button>
+      <button class="chip ${state.filterAmbito==='industriale'?'active':''}" data-filter-ambito="industriale">Industriale</button>
+    </div>
+  </div>
+  <div class="feed-list" style="margin-top:16px;">
+    ${items.length ? items.map(renderUpdateCard).join('') : `<div class="empty-state">Nessun aggiornamento corrisponde ai filtri selezionati. Prova ad allargare la ricerca.</div>`}
+  </div>`;
+}
+
+function renderUpdateDetail(){
+  const u = updateIndex[state.currentUpdateId];
+  if(!u) return '';
+  const days = u.scadenza ? daysUntil(u.scadenza) : null;
+  const tone = days !== null ? toneForDays(days) : 'info';
+  const dateLabel = u.dateLabel || (u.type === 'bando' ? 'Scadenza' : 'In vigore dal');
+  const saved = isSaved('update', u.id);
+  const daysText = days === null ? (u.type === 'bando' ? 'A sportello' : '—') : days < 0 ? 'Scaduto' : days === 0 ? 'Scade oggi' : `tra ${days} giorni`;
+  return `
+  <button class="back-link" data-nav="feed-list">${icon('back')} Aggiornamenti</button>
+  <div class="detail-wrap">
+    <div class="detail-pills">
+      <span class="pill pill-type-${u.type}">${typeLabel(u.type, true)}</span>
+      <span class="pill pill-ambito">${u.ambito === 'entrambi' ? 'Civile + industriale' : u.ambito === 'civile' ? 'Civile' : 'Industriale'}</span>
+      <span class="pill tone-${tone}">${daysText}</span>
+    </div>
+    <div class="detail-header">
+      <div>
+        <h2 class="detail-title">${u.title}</h2>
+        <div class="detail-sub">${u.sottotitolo}</div>
+      </div>
+    </div>
+    <div class="detail-meta">
+      <div><div class="m-label">Ente</div><div class="m-value" style="font-family:var(--font-body); font-size:13.5px;">${u.ente}</div></div>
+      <div><div class="m-label">Pubblicato</div><div class="m-value">${fmtDate(u.pubblicato)}</div></div>
+      <div><div class="m-label">${dateLabel}</div><div class="m-value" style="${u.scadenza ? '' : 'font-family:var(--font-body); font-size:13.5px;'}">${u.scadenza ? fmtDate(u.scadenza) : (u.scadenzaNota || 'A sportello')}</div></div>
+    </div>
+    <div class="detail-block">
+      <h3>Sintesi</h3>
+      <p>${u.sintesi}</p>
+    </div>
+    <div class="detail-block">
+      <h3>${u.type === 'bando' ? 'Requisiti principali' : u.type === 'cer' ? 'Come funziona' : 'Punti di impatto per l’installatore'}</h3>
+      <ul class="req-list">
+        ${u.requisiti.map(r => `<li>${icon('check')}<span>${r}</span></li>`).join('')}
+      </ul>
+    </div>
+    ${u.contributo ? `<div class="contrib-box"><div class="m-label">Entità del contributo</div><p>${u.contributo}</p></div>` : ''}
+    <div class="detail-actions">
+      <button class="btn btn-accent ${saved ? 'saved' : ''}" data-toggle-star="update:${u.id}">
+        ${saved ? icon('starFill') : icon('star')} ${saved ? 'Salvato nei preferiti' : 'Salva nei preferiti'}
+      </button>
+      <button class="btn" onclick="window.print()">${icon('print')} Stampa scheda</button>
+    </div>
+    <div class="source-note">${u.datiReali
+      ? `Fonte: ${u.ente} — dati reali riassunti a scopo dimostrativo per questo prototipo. Verificare sempre il testo ufficiale aggiornato prima di applicarlo a un caso reale.`
+      : `Fonte: ${u.ente} — contenuto dimostrativo a scopo di prototipo, non un bando o una norma reale.`}</div>
+  </div>`;
+}
+
+function brandInitials(nome){
+  return nome.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+}
+
+function renderMarcheList(){
+  const list = state.marcheCategory === 'inverter' ? INVERTER : state.marcheCategory === 'batterie' ? BATTERIE : COLONNINE;
+  return `
+  <div class="cat-tabs">
+    <button class="cat-tab ${state.marcheCategory==='inverter'?'active':''}" data-cat="inverter">${icon('bolt')} Inverter</button>
+    <button class="cat-tab ${state.marcheCategory==='batterie'?'active':''}" data-cat="batterie">${icon('battery')} Batterie</button>
+    <button class="cat-tab ${state.marcheCategory==='colonnine'?'active':''}" data-cat="colonnine">${icon('plug')} Colonnine di ricarica</button>
+  </div>
+  <div class="brand-grid">
+    ${list.map(b => `
+      <button class="brand-card" data-open-brand="${b.id}">
+        <div class="brand-logo">${brandInitials(b.nome)}</div>
+        <div class="b-name">${b.nome}</div>
+        <div class="b-meta">${b.paese}</div>
+        <div class="b-count">${b.modelli.length} scheda${b.modelli.length > 1 ? 'e' : ''} di commissioning</div>
+      </button>`).join('')}
+  </div>`;
+}
+
+function findBrand(id){
+  return INVERTER.find(b => b.id === id) || BATTERIE.find(b => b.id === id) || COLONNINE.find(b => b.id === id);
+}
+function categoryOfBrand(id){
+  if(INVERTER.find(x => x.id === id)) return 'inverter';
+  if(BATTERIE.find(x => x.id === id)) return 'batteria';
+  return 'colonnina';
+}
+
+function renderBrandDetail(){
+  const b = findBrand(state.currentBrandId);
+  if(!b) return '';
+  const cat = categoryOfBrand(b.id);
+  const catLabel = cat === 'inverter' ? 'Inverter fotovoltaici' : cat === 'batteria' ? 'Sistemi di accumulo' : 'Colonnine di ricarica';
+  return `
+  <button class="back-link" data-nav="marche-list">${icon('back')} Marche</button>
+  <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+    <div class="brand-logo" style="width:56px; height:56px; font-size:20px;">${brandInitials(b.nome)}</div>
+    <div>
+      <h2 style="font-size:28px;">${b.nome}</h2>
+      <div style="color:var(--ink-soft); font-size:13.5px;">${b.paese} · ${catLabel}</div>
+    </div>
+  </div>
+  <div class="model-list">
+    ${b.modelli.map(m => `
+      <button class="model-card" data-open-model="${m.id}">
+        <div class="mc-main">
+          <div class="mc-name">${m.nome}</div>
+          <div class="mc-tags">${m.tipo}</div>
+        </div>
+        <div class="mc-spec">${m.potenza || m.capacita}</div>
+        ${icon('chev')}
+      </button>`).join('')}
+  </div>`;
+}
+
+function renderModelDoc(){
+  const entry = modelIndex[state.currentModelId];
+  if(!entry) return '';
+  const { brand: b, model: m, category } = entry;
+  const saved = isSaved('model', m.id);
+  return `
+  <button class="back-link" data-nav-brand="${b.id}">${icon('back')} ${b.nome}</button>
+  <div class="detail-wrap">
+    <div class="doc-header">
+      <div class="doc-brand">${b.nome} · Scheda di commissioning</div>
+      <h2>${m.nome}</h2>
+      <div class="doc-specs">
+        <span>Tipo: <b>${m.tipo}</b></span>
+        <span>${category === 'batteria' ? 'Capacità' : 'Potenza'}: <b>${m.potenza || m.capacita}</b></span>
+      </div>
+      <div class="doc-rev">${m.rev} — documento semplificato ad uso del tecnico installatore</div>
+    </div>
+    ${category === 'colonnina' ? `
+    <div class="contrib-box" style="background:var(--info-bg); border-color:var(--info);">
+      <div class="m-label" style="color:var(--info);">Integrazione con l’impianto fotovoltaico</div>
+      <p>${m.integrazioneFV}</p>
+      <p style="margin-top:8px;"><b>Modalità di ricarica solare:</b> ${m.modalitaSolare}</p>
+      ${m.v2g ? `<p style="margin-top:6px;"><b>Ricarica bidirezionale (V2G/V2H):</b> ${m.v2g}</p>` : ''}
+      <p style="margin-top:10px;"><b>Accessori aggiuntivi richiesti:</b> <span class="pill ${m.accessorioRichiesto ? 'tone-warn' : 'tone-good'}">${m.accessorioRichiesto ? m.accessorioRichiesto : 'Nessuno — integrazione nativa'}</span></p>
+    </div>` : ''}
+    ${category === 'batteria' ? `
+    <div class="contrib-box" style="background:var(--good-bg); border-color:var(--good);">
+      <div class="m-label" style="color:var(--good);">Abbinamento con inverter</div>
+      ${m.compatibiliIds.length ? `
+      <p>Compatibile con:</p>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:7px;">
+        ${m.compatibiliIds.map(id => {
+          const e = modelIndex[id];
+          return e ? `<button class="pill pill-ambito" data-open-model="${id}" style="cursor:pointer; border:1px solid var(--border-strong);">${e.brand.nome} ${e.model.nome}</button>` : '';
+        }).join('')}
+      </div>` : ''}
+      <p style="margin-top:10px; color:var(--ink-soft); font-size:13.5px;">${m.incompatibiliNota}</p>
+    </div>` : ''}
+    ${m.sections.map((sec, si) => `
+      <div class="doc-section">
+        <h3><span class="step-no">${si+1}</span>${sec.titolo}</h3>
+        ${sec.voci.map((v, vi) => {
+          const key = m.id + '-' + si + '-' + vi;
+          const checked = state.checkedSteps.has(key);
+          return `<div class="check-item ${checked?'checked':''}" data-check="${key}">
+            <span class="box">${icon('checkSm')}</span>
+            <span>${v}</span>
+          </div>`;
+        }).join('')}
+      </div>`).join('')}
+    <div class="detail-actions">
+      ${m.primaConfig ? `<button class="btn btn-accent" data-open-prima-config="${m.id}">${icon('bolt')} Prima configurazione</button>` : ''}
+      <button class="btn ${saved ? 'saved' : ''}" data-toggle-star="model:${m.id}">
+        ${saved ? icon('starFill') : icon('star')} ${saved ? 'Salvato nei preferiti' : 'Salva nei preferiti'}
+      </button>
+      <button class="btn" onclick="window.print()">${icon('print')} Stampa checklist</button>
+    </div>
+    <div class="source-note">Scheda semplificata a scopo dimostrativo, non sostituisce il manuale ufficiale del costruttore.</div>
+  </div>`;
+}
+
+function renderPrimaConfig(){
+  const entry = modelIndex[state.currentModelId];
+  if(!entry) return '';
+  const { brand: b, model: m } = entry;
+  if(!m.primaConfig) return '';
+  return `
+  <button class="back-link" data-nav-model="${m.id}">${icon('back')} ${m.nome}</button>
+  <div class="detail-wrap">
+    <div class="pc-header">
+      <div class="pc-eyebrow">${b.nome} · Prima configurazione</div>
+      <h2>${m.nome}</h2>
+      <p>I passaggi essenziali per la prima accensione e configurazione, riassunti dal manuale ufficiale del costruttore in un linguaggio semplice.</p>
+    </div>
+    <div class="pc-list">
+      ${m.primaConfig.map((step, i) => `
+        <div class="pc-step">
+          <div class="pc-num">${i+1}</div>
+          <div class="pc-text">${step}</div>
+        </div>`).join('')}
+    </div>
+    <div class="detail-actions" style="margin-top:6px;">
+      <button class="btn" onclick="window.print()">${icon('print')} Stampa questi passaggi</button>
+    </div>
+    <div class="pc-source-note">Riassunto a scopo dimostrativo dal manuale d’uso/guida rapida ufficiale ${b.nome}. Per l’installazione fare sempre riferimento al manuale completo del modello esatto in tuo possesso.</div>
+  </div>`;
+}
+
+function renderPreferiti(){
+  const saved = getSaved();
+  if(!saved.length){
+    return `<div class="empty-state">Non hai ancora salvato nulla. Tocca la stella su un aggiornamento o su una scheda di commissioning per ritrovarla qui.</div>`;
+  }
+  const rows = saved.map(s => {
+    if(s.kind === 'update'){
+      const u = updateIndex[s.id];
+      if(!u) return '';
+      return `<button class="pref-row" data-open-update="${u.id}">
+        <div class="pr-main">
+          <div class="pr-title">${u.title}</div>
+          <div class="pr-sub">${typeLabel(u.type)} · ${u.ente.split(' –')[0]}</div>
+        </div>
+        <button class="star-btn saved" data-toggle-star="update:${u.id}" aria-label="Rimuovi">${icon('starFill')}</button>
+      </button>`;
+    } else {
+      const entry = modelIndex[s.id];
+      if(!entry) return '';
+      return `<button class="pref-row" data-open-model="${entry.model.id}">
+        <div class="pr-main">
+          <div class="pr-title">${entry.model.nome}</div>
+          <div class="pr-sub">${entry.brand.nome} · Scheda di commissioning</div>
+        </div>
+        <button class="star-btn saved" data-toggle-star="model:${entry.model.id}" aria-label="Rimuovi">${icon('starFill')}</button>
+      </button>`;
+    }
+  }).join('');
+  return `<div class="feed-list">${rows}</div>`;
+}
+
+function topbarFor(){
+  if(state.screen === 'feed-list' || state.screen === 'feed-detail'){
+    return { title:'Aggiornamenti', sub:'Bandi e norme tecniche per il fotovoltaico, civile e industriale', showSearch: state.screen==='feed-list' };
+  }
+  if(state.screen.startsWith('marche')){
+    return { title:'Marche & commissioning', sub:'Inverter e batterie: schede semplificate di messa in servizio', showSearch:false };
+  }
+  return { title:'Preferiti', sub:'Aggiornamenti e schede che hai salvato', showSearch:false };
+}
+
+function upcomingDeadlines(){
+  return UPDATES.filter(u => u.scadenza && daysUntil(u.scadenza) >= 0)
+    .sort((a,b) => daysUntil(a.scadenza) - daysUntil(b.scadenza))
+    .slice(0,3);
+}
+
+function render(){
+  const tb = topbarFor();
+  const deadlines = upcomingDeadlines();
+  let body = '';
+  if(state.screen === 'feed-list') body = renderFeedList();
+  else if(state.screen === 'feed-detail') body = renderUpdateDetail();
+  else if(state.screen === 'marche-list') body = renderMarcheList();
+  else if(state.screen === 'marche-brand') body = renderBrandDetail();
+  else if(state.screen === 'marche-model') body = renderModelDoc();
+  else if(state.screen === 'marche-prima-config') body = renderPrimaConfig();
+  else if(state.screen === 'preferiti') body = renderPreferiti();
+
+  document.getElementById('app').innerHTML = `
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">${icon('sun')}</div>
+        <div>
+          <div class="brand-name">Irradia</div>
+          <div class="brand-tag">Intelligence per il fotovoltaico</div>
+        </div>
+      </div>
+      <nav class="mainnav">
+        <button class="navlink ${state.screen.startsWith('feed')?'active':''}" data-nav="feed-list">${icon('feed')}<span class="label">Aggiornamenti</span><span class="count">${UPDATES.length}</span></button>
+        <button class="navlink ${state.screen.startsWith('marche')?'active':''}" data-nav="marche-list">${icon('grid')}<span class="label">Marche & commissioning</span></button>
+        <button class="navlink ${state.screen==='preferiti'?'active':''}" data-nav="preferiti">${icon('star')}<span class="label">Preferiti</span><span class="count">${getSaved().length}</span></button>
+      </nav>
+      <div class="sidebar-widget">
+        <h4>Prossime scadenze</h4>
+        ${deadlines.map(u => `<div class="deadline-row"><span class="dl-title">${u.title}</span><span class="dl-days">${daysUntil(u.scadenza)} g</span></div>`).join('')}
+        <div class="sidebar-footnote">Prototipo interattivo — bandi, norme e schede sono contenuti di esempio.</div>
+      </div>
+    </aside>
+    <main>
+      <div class="topbar">
+        <div class="topbar-row">
+          <div>
+            <h1>${tb.title}</h1>
+            <div class="sub">${tb.sub}</div>
+          </div>
+          ${tb.showSearch ? `
+          <div class="searchbox">
+            ${icon('search')}
+            <input type="text" id="search-input" placeholder="Cerca per titolo o ente…" value="${state.query.replace(/"/g,'&quot;')}">
+          </div>` : ''}
+        </div>
+      </div>
+      <div class="content">${body}</div>
+    </main>`;
+
+  wireEvents();
+}
+
+function wireEvents(){
+  const app = document.getElementById('app');
+  app.addEventListener('click', onAppClick);
+  const search = document.getElementById('search-input');
+  if(search){
+    search.addEventListener('input', e => { state.query = e.target.value; renderKeepFocus(); });
+  }
+}
+
+function renderKeepFocus(){
+  render();
+  const search = document.getElementById('search-input');
+  if(search){
+    search.focus();
+    const val = search.value;
+    search.value = '';
+    search.value = val;
+  }
+}
+
+function onAppClick(e){
+  const navBtn = e.target.closest('[data-nav]');
+  const navBrand = e.target.closest('[data-nav-brand]');
+  const navModel = e.target.closest('[data-nav-model]');
+  const openUpdate = e.target.closest('[data-open-update]');
+  const openBrand = e.target.closest('[data-open-brand]');
+  const openModel = e.target.closest('[data-open-model]');
+  const openPrimaConfig = e.target.closest('[data-open-prima-config]');
+  const starBtn = e.target.closest('[data-toggle-star]');
+  const filterTipo = e.target.closest('[data-filter-tipo]');
+  const filterAmbito = e.target.closest('[data-filter-ambito]');
+  const catTab = e.target.closest('[data-cat]');
+  const checkItem = e.target.closest('[data-check]');
+
+  if(starBtn){
+    e.stopPropagation();
+    const [kind, id] = starBtn.getAttribute('data-toggle-star').split(':');
+    toggleSaved(kind, id);
+    return;
+  }
+  if(checkItem){
+    const key = checkItem.getAttribute('data-check');
+    if(state.checkedSteps.has(key)) state.checkedSteps.delete(key);
+    else state.checkedSteps.add(key);
+    render();
+    return;
+  }
+  if(navBtn){ navTo(navBtn.getAttribute('data-nav')); return; }
+  if(navBrand){ state.screen = 'marche-brand'; state.currentBrandId = navBrand.getAttribute('data-nav-brand'); render(); return; }
+  if(navModel){ state.screen = 'marche-model'; state.currentModelId = navModel.getAttribute('data-nav-model'); render(); return; }
+  if(openPrimaConfig){ state.screen = 'marche-prima-config'; state.currentModelId = openPrimaConfig.getAttribute('data-open-prima-config'); render(); return; }
+  if(openUpdate){ state.screen = 'feed-detail'; state.currentUpdateId = openUpdate.getAttribute('data-open-update'); render(); return; }
+  if(openBrand){ state.screen = 'marche-brand'; state.currentBrandId = openBrand.getAttribute('data-open-brand'); render(); return; }
+  if(openModel){
+    const id = openModel.getAttribute('data-open-model');
+    state.screen = 'marche-model';
+    state.currentModelId = id;
+    if(!state.currentBrandId){ state.currentBrandId = modelIndex[id].brand.id; }
+    render();
+    return;
+  }
+  if(filterTipo){ state.filterTipo = filterTipo.getAttribute('data-filter-tipo'); render(); return; }
+  if(filterAmbito){ state.filterAmbito = filterAmbito.getAttribute('data-filter-ambito'); render(); return; }
+  if(catTab){ state.marcheCategory = catTab.getAttribute('data-cat'); render(); return; }
+}
+
+render();
+</script>
