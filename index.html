@@ -294,6 +294,21 @@ main{min-width:0; display:flex; flex-direction:column;}
 .pref-row .pr-title{font-family:var(--font-display); font-size:16.5px; font-weight:600;}
 .pref-row .pr-sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
 
+/* ---------- Landing ---------- */
+.landing{
+  min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center;
+  background:var(--primary); color:var(--primary-ink); padding:32px;
+}
+.landing-content{max-width:480px; display:flex; flex-direction:column; align-items:center; gap:18px;}
+.landing-mark{
+  width:64px; height:64px; border-radius:16px; background:var(--accent); color:var(--accent-ink);
+  display:flex; align-items:center; justify-content:center; flex:none;
+}
+.landing-mark svg{width:34px; height:34px;}
+.landing-name{font-family:var(--font-display); font-size:40px; font-weight:700; letter-spacing:.02em; color:var(--primary-ink);}
+.landing-claim{font-size:16px; line-height:1.6; color:#cddbe2;}
+.landing-cta{margin-top:8px; padding:12px 24px; font-size:14.5px;}
+
 [hidden]{display:none !important;}
 
 @media print{
@@ -1045,7 +1060,7 @@ UPDATES.forEach(u => updateIndex[u.id] = u);
 
 /* ---------- state ---------- */
 const state = {
-  screen: 'feed-list',
+  screen: 'landing',
   filterTipo: 'tutti',
   filterAmbito: 'tutti',
   query: '',
@@ -1389,7 +1404,24 @@ function upcomingDeadlines(){
     .slice(0,3);
 }
 
+function renderLanding(){
+  return `
+  <div class="landing">
+    <div class="landing-content">
+      <div class="landing-mark">${icon('sun')}</div>
+      <div class="landing-name">Irradia</div>
+      <p class="landing-claim">L'hub per gli installatori fotovoltaici: bandi, norme, CER e commissioning delle marche, in un unico posto.</p>
+      <button class="btn btn-accent landing-cta" data-nav="feed-list">Entra nell'app ${icon('chev')}</button>
+    </div>
+  </div>`;
+}
+
 function render(){
+  if(state.screen === 'landing'){
+    document.getElementById('app').innerHTML = renderLanding();
+    wireEvents();
+    return;
+  }
   const tb = topbarFor();
   const deadlines = upcomingDeadlines();
   let body = '';
